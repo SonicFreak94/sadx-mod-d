@@ -48,6 +48,7 @@ struct ModInfo
 }
 
 import std.stdio;
+import memaccess;
 import vars;
 
 extern (C)
@@ -56,10 +57,13 @@ extern (C)
 	export void Init()
 	{
 		stdout.writeln("D Mod Init");
+		// This disables ring count increment
+		WriteData(cast(void*)0x00425C03, cast(ubyte)0x90, 7);
 	}
 
 	export void OnFrame()
 	{
+		// This should always print 0
 		stdout.writeln("D Mod Ring Count: ", cast(short)Rings);
 	}
 }
