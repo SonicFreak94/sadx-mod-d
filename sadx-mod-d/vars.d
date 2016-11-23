@@ -1,0 +1,52 @@
+module vars;
+
+import memaccess;
+
+public:
+
+mixin DataArray!(bool, "ControllerEnabled", 0x00909FB4, 4);
+mixin DataArray!(char*, "CharIDStrings", 0x90F424, 9);
+mixin DataArray!(char, "CutsceneFlagArray", 0x3B18608, 512);
+mixin DataArray!(char, "EventFlagArray", 0x3B18808, 512);
+mixin DataArray!(int, "LifeTextures", 0x009BF1D8, 8);
+mixin DataPointer!(bool, "IsChaoStage", 0x3B22E80);
+mixin DataPointer!(bool, "IsWindowed", 0x38A5DC4);
+mixin DataPointer!(uint, "DisplayAdapter", 0x03D0FDFC);
+mixin DataPointer!(bool, "ControlEnabled", 0x00909FB0);
+mixin DataPointer!(bool, "LoadingFile", 0x3ABDF68);
+mixin DataPointer!(bool, "RumbleEnabled", 0x00913B10);
+mixin DataPointer!(char, "HideHud", 0x03B0EF40);
+mixin DataPointer!(char, "LastStoryFlag", 0x3B18DB4);
+mixin DataPointer!(char, "Lives", 0x03B0EF34);
+mixin DataPointer!(char, "MetalSonicFlag", 0x3B18DB5);
+mixin DataPointer!(float, "DebugFontSize", 0x03CE7154);
+mixin DataPointer!(float, "HorizontalStretch", 0x8928C0);
+mixin DataPointer!(float, "SkyChaseHealth", 0x03C82304);
+mixin DataPointer!(float, "VerticalStretch", 0x8928C4);
+mixin DataPointer!(int, "AttackButtons", 0x00909F94);
+mixin DataPointer!(int, "CasinoRings", 0x03C74880);
+mixin DataPointer!(int, "DebugFontColor", 0x03CE715C);
+mixin DataPointer!(int, "DemoPlaying", 0x3B2A2E4);
+mixin DataPointer!(int, "FrameCounter", 0x3B0F13C);
+mixin DataPointer!(int, "FrameIncrement", 0x03B11178);
+mixin DataPointer!(int, "GameMode", 0x3ABDC7C);
+mixin DataPointer!(int, "GrabButtons", 0x00909FA4);
+mixin DataPointer!(int, "HorizontalResolution", 0x892990);
+mixin DataPointer!(int, "ItemBoxPowerups_Index", 0x3C5C888);
+mixin DataPointer!(int, "JumpButtons", 0x00909F98);
+mixin DataPointer!(int, "LevelFrameCount", 0x3B0F108);
+mixin DataPointer!(int, "MarketRings", 0x03B2C3FC);
+mixin DataPointer!(int, "SegaLogo_Frames", 0x3B29D68);
+mixin DataPointer!(int, "SegaLogo_Mode", 0x3B29D6C);
+mixin DataPointer!(int, "VerticalResolution", 0x892994);
+mixin DataPointer!(int, "VoiceLanguage", 0x03B0EF38);
+mixin DataPointer!(short, "CurrentAct", 0x3B22DEC);
+mixin DataPointer!(short, "CurrentCharacter", 0x3B22DC0);
+mixin DataPointer!(short, "CurrentLevel", 0x3B22DCC);
+mixin DataPointer!(short, "GameState", 0x03B22DE4);
+mixin DataPointer!(short, "LastAct", 0x03B22DD4);
+mixin DataPointer!(short, "LastLevel", 0x03B22DD8);
+mixin DataPointer!(short, "NextAct", 0x03B22E18);
+mixin DataPointer!(short, "NextLevel", 0x03B22DF0);
+mixin DataPointer!(short, "ObjectPlacementDebug", 0x3B29D08);
+mixin DataPointer!(short, "Rings", 0x03B0F0E4);
