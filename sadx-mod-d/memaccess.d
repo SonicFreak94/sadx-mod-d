@@ -11,146 +11,9 @@ import std.traits;
 * Memory access inline functions.
 */
 
-/**
-* Get the number of elements in an array.
-* @return Number of elements in the array.
-*/
-static auto LengthOfArray(T)(T t)
-{
-	static assert(isArray!(T));
-	return t.length;
-}
+// Types
 
-/**
-* Get the size of an array.
-* @return Size of the array, in bytes.
-*/
-static auto SizeOfArray(T)(T t)
-{
-	static assert(isArray!(T));
-	return t.empty ? 0 : typeof(*t.ptr).sizeof * t.length;
-}
-
-// Macros for functions that need both an array
-// and the array length or size.
-template arrayptrandlength(data)
-{
-	static assert(isArray!(data));
-	mixin("data, LengthOfArray(data)");
-}
-template arraylengthandptr(data)
-{
-	static assert(isArray!(data));
-	mixin("LengthOfArray(data), data");
-}
-template arrayptrandsize(data)
-{
-	static assert(isArray!(data));
-	mixin("data, SizeOfArray(data)");
-}
-template arraysizeandptr(data)
-{
-	static assert(isArray!(data));
-	mixin("SizeOfArray(data), data");
-}
-
-static BOOL WriteData(void* writeaddress, const void* data, SIZE_T datasize, SIZE_T* byteswritten)
-{
-	return WriteProcessMemory(GetCurrentProcess(), writeaddress, data, datasize, byteswritten);
-}
-
-static BOOL WriteData(void* writeaddress, const void* data, SIZE_T datasize)
-{
-	return WriteData(writeaddress, data, datasize, null);
-}
-
-static BOOL WriteData(T)(const T* writeaddress, const T data, SIZE_T* byteswritten)
-{
-	return WriteData(cast(void*)writeaddress, cast(void*)&data, cast(SIZE_T)T.sizeof, byteswritten);
-}
-
-static BOOL WriteData(T)(const T* writeaddress, const T data)
-{
-	return WriteData(writeaddress, data, null);
-}
-
-static BOOL WriteData(T)(T* writeaddress, in T data, SIZE_T* byteswritten)
-{
-	return WriteData(writeaddress, &data, sizeof(data), byteswritten);
-}
-
-static BOOL WriteData(T)(T* writeaddress, in T data)
-{
-	return WriteData(writeaddress, data, null);
-}
-
-static BOOL WriteData(T)(void* writeaddress, const T data, SIZE_T* byteswritten)
-{
-	static assert(isArray!(T));
-	return WriteData(writeaddress, data.ptr, SizeOfArray(data), byteswritten);
-}
-
-static BOOL WriteData(T)(void* writeaddress, const T data)
-{
-	return WriteData(writeaddress, data, null);
-}
-
-/**
-* Write a repeated byte to an arbitrary address.
-* @param address	[in] Address.
-* @param data		[in] Byte to write.
-* @param count		[in] Number of repetitions.
-* @param byteswritten	[out, opt] Number of bytes written.
-* @return Nonzero on success; 0 on error (check GetLastError()).
-*/
-static BOOL WriteData(void* address, ubyte data, int count, SIZE_T* byteswritten)
-{
-	auto buf = replicate([ data ], count);
-	int result = WriteData(address, buf.ptr, buf.length, byteswritten);
-	buf.destroy();
-	return result;
-}
-
-/**
-* Write a repeated byte to an arbitrary address.
-* @param address	[in] Address.
-* @param data		[in] Byte to write.
-* @param count		[in] Number of repetitions.
-* @return Nonzero on success; 0 on error (check GetLastError()).
-*/
-static BOOL WriteData(void* address, ubyte data, int count)
-{
-	return WriteData(address, data, count, null);
-}
-
-/**
-* Write a JMP instruction to an arbitrary address.
-* @param writeaddress Address to insert the JMP instruction.
-* @param funcaddress Address to JMP to.
-* @return Nonzero on success; 0 on error (check GetLastError()).
-*/
-static BOOL WriteJump(void* writeaddress, void* funcaddress)
-{
-	ubyte[5] data;
-	data[0] = 0xE9; // JMP DWORD (relative)
-	*cast(int*)(data.ptr + 1) = cast(uint)funcaddress - (cast(uint)writeaddress + 5);
-	return WriteData(writeaddress, data);
-}
-
-/**
-* Write a CALL instruction to an arbitrary address.
-* @param writeaddress Address to insert the CALL instruction.
-* @param funcaddress Address to CALL.
-* @return Nonzero on success; 0 on error (check GetLastError()).
-*/
-static BOOL WriteCall(void* writeaddress, void* funcaddress)
-{
-	ubyte[5] data;
-	data[0] = 0xE8; // CALL DWORD (relative)
-	*cast(int*)(data.ptr + 1) = cast(uint)funcaddress - (cast(uint)writeaddress + 5);
-	return WriteData(writeaddress, data);
-}
-
+// Wrapper structure used to emulate the C++ syntax: int& myInt = *(int*)0x12345678;
 struct Reference(Type)
 {
 	private Type* __ptr;
@@ -229,23 +92,7 @@ struct Reference(Type)
 	}
 }
 
-// Data pointer and array declarations.
-
-template DataPointer(type, string name, size_t address)
-{
-	import std.string : format;
-
-	mixin(format("auto %2$s = Reference!(%1$s)(cast(%1$s*)0x%3$08X);", 
-									  type.stringof, name, address));
-}
-template DataArray(type, string name, size_t address, size_t length)
-{
-	import std.string : format;
-
-	mixin(format("const auto %2$s = cast(%1$s*)%3$s; const auto %2$s_Length = %4$s;",
-									type.stringof, name, address, length));
-}
-
+// Argument for function pointers. See MakeArg.
 struct FunctionArg
 {
 	string type;
@@ -256,20 +103,185 @@ struct FunctionArg
 		this.type = type.idup;
 		this.name = name.idup;
 	}
+
+	// Returns a string representation of the argument.
+	// If the type is void, only the name is returned. Otherwise,
+	// it returns the format: [type] [name].
+	// Example: int myInt
+	string toString()
+	{
+		return (type != "void" ? (type ~ " " ~ name) : name);
+	}
 }
+// Creates a FunctionArg of type T.
+// Example: MakeArg!int(myInt);
 auto MakeArg(T)(string name)
 {
 	return FunctionArg(T.stringof, name);
 }
-
+// Joins an array of arguments together, separated by comma.
 string toString(FunctionArg[] a)
 {
 	if (a.empty)
+	{
 		return null;
+	}
 
-	return a
-		.map!(x => ((x.type != "void") ? (x.type ~ " " ~ x.name) : x.name))
-		.join(", ");
+	return a.map!(x => x.toString()).join(", ");
+}
+
+
+/**
+* Get the number of elements in an array.
+* @return Number of elements in the array.
+*/
+static auto LengthOfArray(T)(T t)
+{
+	static assert(isArray!(T));
+	return t.length;
+}
+
+/**
+* Get the size of an array.
+* @return Size of the array, in bytes.
+*/
+static auto SizeOfArray(T)(T t)
+{
+	static assert(isArray!(T));
+	return t.empty ? 0 : typeof(*t.ptr).sizeof * t.length;
+}
+
+// Macros for functions that need both an array
+// and the array length or size.
+template arrayptrandlength(data)
+{
+	static assert(isArray!(data));
+	mixin("data, LengthOfArray(data)");
+}
+template arraylengthandptr(data)
+{
+	static assert(isArray!(data));
+	mixin("LengthOfArray(data), data");
+}
+template arrayptrandsize(data)
+{
+	static assert(isArray!(data));
+	mixin("data, SizeOfArray(data)");
+}
+template arraysizeandptr(data)
+{
+	static assert(isArray!(data));
+	mixin("SizeOfArray(data), data");
+}
+
+static BOOL WriteData(void* writeaddress, const void* data, SIZE_T datasize, SIZE_T* byteswritten)
+{
+	return WriteProcessMemory(GetCurrentProcess(), writeaddress, data, datasize, byteswritten);
+}
+static BOOL WriteData(void* writeaddress, const void* data, SIZE_T datasize)
+{
+	return WriteData(writeaddress, data, datasize, null);
+}
+
+static BOOL WriteData(T)(const T* writeaddress, const T data, SIZE_T* byteswritten)
+{
+	return WriteData(cast(void*)writeaddress, cast(void*)&data, cast(SIZE_T)T.sizeof, byteswritten);
+}
+static BOOL WriteData(T)(const T* writeaddress, const T data)
+{
+	return WriteData(writeaddress, data, null);
+}
+
+static BOOL WriteData(T)(T* writeaddress, in T data, SIZE_T* byteswritten)
+{
+	return WriteData(writeaddress, &data, sizeof(data), byteswritten);
+}
+static BOOL WriteData(T)(T* writeaddress, in T data)
+{
+	return WriteData(writeaddress, data, null);
+}
+
+static BOOL WriteData(T)(void* writeaddress, const T data, SIZE_T* byteswritten)
+{
+	static assert(isArray!(T));
+	return WriteData(writeaddress, data.ptr, SizeOfArray(data), byteswritten);
+}
+static BOOL WriteData(T)(void* writeaddress, const T data)
+{
+	return WriteData(writeaddress, data, null);
+}
+
+/**
+* Write a repeated byte to an arbitrary address.
+* @param address	[in] Address.
+* @param data		[in] Byte to write.
+* @param count		[in] Number of repetitions.
+* @param byteswritten	[out, opt] Number of bytes written.
+* @return Nonzero on success; 0 on error (check GetLastError()).
+*/
+static BOOL WriteData(void* address, ubyte data, int count, SIZE_T* byteswritten)
+{
+	auto buf = replicate([ data ], count);
+	int result = WriteData(address, buf.ptr, buf.length, byteswritten);
+	buf.destroy();
+	return result;
+}
+
+/**
+* Write a repeated byte to an arbitrary address.
+* @param address	[in] Address.
+* @param data		[in] Byte to write.
+* @param count		[in] Number of repetitions.
+* @return Nonzero on success; 0 on error (check GetLastError()).
+*/
+static BOOL WriteData(void* address, ubyte data, int count)
+{
+	return WriteData(address, data, count, null);
+}
+
+/**
+* Write a JMP instruction to an arbitrary address.
+* @param writeaddress Address to insert the JMP instruction.
+* @param funcaddress Address to JMP to.
+* @return Nonzero on success; 0 on error (check GetLastError()).
+*/
+static BOOL WriteJump(void* writeaddress, void* funcaddress)
+{
+	ubyte[5] data;
+	data[0] = 0xE9; // JMP DWORD (relative)
+	*cast(int*)(data.ptr + 1) = cast(uint)funcaddress - (cast(uint)writeaddress + 5);
+	return WriteData(writeaddress, data);
+}
+
+/**
+* Write a CALL instruction to an arbitrary address.
+* @param writeaddress Address to insert the CALL instruction.
+* @param funcaddress Address to CALL.
+* @return Nonzero on success; 0 on error (check GetLastError()).
+*/
+static BOOL WriteCall(void* writeaddress, void* funcaddress)
+{
+	ubyte[5] data;
+	data[0] = 0xE8; // CALL DWORD (relative)
+	*cast(int*)(data.ptr + 1) = cast(uint)funcaddress - (cast(uint)writeaddress + 5);
+	return WriteData(writeaddress, data);
+}
+
+// Data pointer and array declarations.
+
+template DataPointer(type, string name, size_t address)
+{
+	import std.string : format;
+
+	mixin(format("auto %2$s = Reference!(%1$s)(cast(%1$s*)0x%3$08X);",
+				 type.stringof, name, address));
+}
+template DataArray(type, string name, size_t address, size_t length)
+{
+	import std.string : format;
+
+	mixin(format("const auto %2$s = cast(%1$s*)%3$s; const auto %2$s_Length = %4$s;",
+				 type.stringof, name, address, length));
 }
 
 // Function pointer declarations.
@@ -297,7 +309,7 @@ template StdcallFunctionPointer(returnType, string name, FunctionArg[] args, siz
 	mixin _funcptr!("Windows", returnType, name, args, address);
 }
 
-string genAsm(string[] registers, string returnType, string name, FunctionArg[] args, size_t address)
+string wrapFunction(string[] registers, string returnType, string name, FunctionArg[] args, size_t address)
 {
 	Appender!(string) str;
 
@@ -309,7 +321,7 @@ string genAsm(string[] registers, string returnType, string name, FunctionArg[] 
 	// type name(args, args, args)
 	// {
 	str.put(format("\n%s %s(%s)\n{",
-				 returnType, name, args.toString()));
+				   returnType, name, args.toString()));
 
 	// Local copy of address. Example:
 	// auto func_ptr = cast(uint)name_ptr;
@@ -380,7 +392,7 @@ template FastcallFunctionPointer(returnType, string name, FunctionArg[] args, si
 	}
 	else
 	{
-		enum _asm = genAsm(["ECX", "EDX"], returnType.stringof, name, args, address);
+		enum _asm = wrapFunction(["ECX", "EDX"], returnType.stringof, name, args, address);
 		debug pragma(msg, _asm ~ "\n");
 		mixin(_asm);
 	}
@@ -394,13 +406,12 @@ template ThiscallFunctionPointer(returnType, string name, FunctionArg[] args, si
 	}
 	else
 	{
-		enum _asm = genAsm(["ECX"], returnType.stringof, name, args, address);
+		enum _asm = wrapFunction(["ECX"], returnType.stringof, name, args, address);
 		debug pragma(msg, _asm ~ "\n");
 		mixin(_asm);
 	}
 }
 
-//#define VoidFunc(NAME, ADDRESS) FunctionPointer(void,NAME,(void),ADDRESS)
 template VoidFunc(string name, size_t address)
 {
 	mixin _funcptr!("C", void, name, [], address);

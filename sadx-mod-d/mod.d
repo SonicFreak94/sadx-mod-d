@@ -19,9 +19,11 @@ import memaccess;
 import vars;
 
 mixin FunctionPointer!(void, "PrintDebug", [ MakeArg!(const char*)("Format"), MakeArg!(void)("...") ], 0x401000);
-mixin FastcallFunctionPointer!(void,
-							   "njRotateXYZ",
-							   [ MakeArg!(float*)("m"), MakeArg!(int)("angx"), MakeArg!(int)("angy"), MakeArg!(int)("angz") ], 0x781770);
+
+mixin FastcallFunctionPointer!(void, "njRotateXYZ", [
+	MakeArg!(float*)("m"), MakeArg!(int)("angx"),
+	MakeArg!(int)("angy"), MakeArg!(int)("angz")
+], 0x781770);
 
 extern (C)
 {
@@ -46,7 +48,6 @@ extern (C)
 
 	export void OnFrame()
 	{
-		// This should always print 0
-		PrintDebug("D Mod Ring Count: %d\n", cast(short)Rings);
+		PrintDebug("[%u] D Mod OnFrame\n", cast(int)FrameCounter);
 	}
 }
