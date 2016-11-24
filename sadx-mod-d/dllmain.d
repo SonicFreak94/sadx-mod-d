@@ -32,38 +32,3 @@ BOOL DllMain(HINSTANCE hInstance, ULONG ulReason, LPVOID pvReserved)
 	}
 	return true;
 }
-
-struct ModInfo
-{
-	int Version;
-	void* Init;
-	const void *Patches;
-	int PatchCount;
-	const void *Jumps;
-	int JumpCount;
-	const void *Calls;
-	int CallCount;
-	const void *Pointers;
-	int PointerCount;
-}
-
-import std.stdio;
-import memaccess;
-import vars;
-
-extern (C)
-{
-	export ModInfo SADXModInfo = { 4 };
-	export void Init()
-	{
-		stdout.writeln("D Mod Init");
-		// This disables ring count increment
-		WriteData(cast(void*)0x00425C03, cast(ubyte)0x90, 7);
-	}
-
-	export void OnFrame()
-	{
-		// This should always print 0
-		stdout.writeln("D Mod Ring Count: ", cast(short)Rings);
-	}
-}

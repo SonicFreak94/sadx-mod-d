@@ -208,6 +208,7 @@
   <File path="dll.def" />
   <File path="dllmain.d" />
   <File path="memaccess.d" />
+  <File path="mod.d" />
   <File path="vars.d" />
  </Folder>
 </DProject>

@@ -246,10 +246,33 @@ template DataArray(type, string name, size_t address, size_t length)
 }
 
 // Function pointer declarations.
+
 //#define FunctionPointer(RETURN_TYPE, NAME, ARGS, ADDRESS) \
 //static RETURN_TYPE (__cdecl* const NAME)ARGS = (RETURN_TYPE (__cdecl*)ARGS)ADDRESS
+
+template FunctionPointer(returnType, string name, string args, size_t address)
+{
+	import std.string : format;
+
+	enum result = format("extern (C) const auto %2$s = cast(%1$s function%3$s)0x%4$08X;",
+						 returnType.stringof, name, args, address);
+	pragma(msg, result);
+	mixin(result);
+}
+
 //#define StdcallFunctionPointer(RETURN_TYPE, NAME, ARGS, ADDRESS) \
 //static RETURN_TYPE (__stdcall* const NAME)ARGS = (RETURN_TYPE (__stdcall*)ARGS)ADDRESS
+
+template StdcallFunctionPointer(returnType, string name, string args, size_t address)
+{
+	import std.string : format;
+
+	enum result = format("extern (Windows) const auto %2$s = cast(%1$s function%3$s)0x%4$08X;",
+						 returnType.stringof, name, args, address);
+	pragma(msg, result);
+	mixin(result);
+}
+
 //#define FastcallFunctionPointer(RETURN_TYPE, NAME, ARGS, ADDRESS) \
 //static RETURN_TYPE (__fastcall* const NAME)ARGS = (RETURN_TYPE (__fastcall*)ARGS)ADDRESS
 //#define ThiscallFunctionPointer(RETURN_TYPE, NAME, ARGS, ADDRESS) \
