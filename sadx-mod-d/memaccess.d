@@ -3,6 +3,7 @@ module memaccess;
 import core.sys.windows.windows;
 import std.string;
 import std.array;
+import std.algorithm;
 import std.traits;
 
 /**
@@ -245,39 +246,165 @@ template DataArray(type, string name, size_t address, size_t length)
 									type.stringof, name, address, length));
 }
 
+struct FunctionArg
+{
+	string type;
+	string name;
+
+	this(string type, string name)
+	{
+		this.type = type.idup;
+		this.name = name.idup;
+	}
+}
+auto MakeArg(T)(string name)
+{
+	return FunctionArg(T.stringof, name);
+}
+
+string toString(FunctionArg[] a)
+{
+	if (a.empty)
+		return null;
+
+	return a
+		.map!(x => ((x.type != "void") ? (x.type ~ " " ~ x.name) : x.name))
+		.join(", ");
+}
+
 // Function pointer declarations.
 
-//#define FunctionPointer(RETURN_TYPE, NAME, ARGS, ADDRESS) \
-//static RETURN_TYPE (__cdecl* const NAME)ARGS = (RETURN_TYPE (__cdecl*)ARGS)ADDRESS
-
-template FunctionPointer(returnType, string name, string args, size_t address)
+template _funcptr(string type, returnType, string name, FunctionArg[] args, size_t address)
 {
-	import std.string : format;
+	import std.string;
+	import std.algorithm;
+	import std.array;
 
-	enum result = format("extern (C) const auto %2$s = cast(%1$s function%3$s)0x%4$08X;",
-						 returnType.stringof, name, args, address);
-	pragma(msg, result);
+	enum result = format("extern (%5$s) const auto %2$s = cast(%1$s function(%3$s))0x%4$08X;",
+						 returnType.stringof, name, args.toString(), address, type);
+
+	debug pragma(msg, result ~ "\n");
 	mixin(result);
 }
 
-//#define StdcallFunctionPointer(RETURN_TYPE, NAME, ARGS, ADDRESS) \
-//static RETURN_TYPE (__stdcall* const NAME)ARGS = (RETURN_TYPE (__stdcall*)ARGS)ADDRESS
-
-template StdcallFunctionPointer(returnType, string name, string args, size_t address)
+template FunctionPointer(returnType, string name, FunctionArg[] args, size_t address)
 {
-	import std.string : format;
-
-	enum result = format("extern (Windows) const auto %2$s = cast(%1$s function%3$s)0x%4$08X;",
-						 returnType.stringof, name, args, address);
-	pragma(msg, result);
-	mixin(result);
+	mixin _funcptr!("C", returnType, name, args, address);
 }
 
-//#define FastcallFunctionPointer(RETURN_TYPE, NAME, ARGS, ADDRESS) \
-//static RETURN_TYPE (__fastcall* const NAME)ARGS = (RETURN_TYPE (__fastcall*)ARGS)ADDRESS
-//#define ThiscallFunctionPointer(RETURN_TYPE, NAME, ARGS, ADDRESS) \
-//static RETURN_TYPE (__thiscall* const NAME)ARGS = (RETURN_TYPE (__thiscall*)ARGS)ADDRESS
+template StdcallFunctionPointer(returnType, string name, FunctionArg[] args, size_t address)
+{
+	mixin _funcptr!("Windows", returnType, name, args, address);
+}
+
+string genAsm(string[] registers, string returnType, string name, FunctionArg[] args, size_t address)
+{
+	Appender!(string) str;
+
+	// Address declaration. Example:
+	// const auto name_ptr = cast(void*)0x12345678;
+	str.put(format("const auto %s_ptr = cast(void*)0x%08X;", name, address));
+
+	// Function declaration. Example:
+	// type name(args, args, args)
+	// {
+	str.put(format("\n%s %s(%s)\n{",
+				 returnType, name, args.toString()));
+
+	// Local copy of address. Example:
+	// auto func_ptr = cast(uint)name_ptr;
+	str.put("\n\tauto func_ptr = cast(uint)" ~ name ~ "_ptr;");
+
+	// If the function has a return value, we should store it
+	// and return it from this wrapper function later.
+	bool has_return = returnType != "void";
+
+	if (has_return)
+	{
+		// Return value. Example:
+		// type result;
+		str.put("\n\t" ~ returnType ~ " result;");
+	}
+
+	// asm
+	// {
+	str.put("\n\tasm\n\t{");
+
+	foreach (i, arg; args)
+	{
+		str.put("\n\t\t");
+
+		// For the first N arguments that are within the number of
+		// given registers, use those registers. Otherwise, push.
+		if (i < registers.length)
+		{
+			// Example:
+			// mov ECX, myCoolArg
+			str.put(format("mov %s, %s;", registers[i], arg.name));
+		}
+		else
+		{
+			str.put("push " ~ arg.name ~ ";");
+		}
+	}
+
+	// Call the real function.
+	str.put("\n\t\tcall far ptr [func_ptr];");
+
+	if (has_return)
+	{
+		// Move the return value into our local variable.
+		//		mov result, eax
+		//	}
+		//	return result;
+		// }
+		str.put("\n\t\tmov result, eax");
+		str.put("\n\t}");
+		str.put("\n\treturn result;\n}");
+	}
+	else
+	{
+		//	} (end of asm block
+		// } (end of function)
+		str.put("\n\t}\n}");
+	}
+
+	return str.data;
+}
+
+template FastcallFunctionPointer(returnType, string name, FunctionArg[] args, size_t address)
+{
+	static if (!args.length)
+	{
+		mixin FunctionPointer!(returnType, name, null, address);
+	}
+	else
+	{
+		enum _asm = genAsm(["ECX", "EDX"], returnType.stringof, name, args, address);
+		debug pragma(msg, _asm ~ "\n");
+		mixin(_asm);
+	}
+}
+
+template ThiscallFunctionPointer(returnType, string name, FunctionArg[] args, size_t address)
+{
+	static if (!args.length)
+	{
+		mixin FunctionPointer!(returnType, name, null, address);
+	}
+	else
+	{
+		enum _asm = genAsm(["ECX"], returnType.stringof, name, args, address);
+		debug pragma(msg, _asm ~ "\n");
+		mixin(_asm);
+	}
+}
+
 //#define VoidFunc(NAME, ADDRESS) FunctionPointer(void,NAME,(void),ADDRESS)
+template VoidFunc(string name, size_t address)
+{
+	mixin _funcptr!("C", void, name, [], address);
+}
 
 //#define patchdecl(address,data) { (void*)address, arrayptrandsize(data) }
 //#define ptrdecl(address,data) { (void*)address, (void*)data }
