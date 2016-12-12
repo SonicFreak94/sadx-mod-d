@@ -96,13 +96,9 @@ struct Reference(Type)
 struct FunctionArg
 {
 	string type;
+	size_t size;
+	string register;
 	string name;
-
-	this(string type, string name)
-	{
-		this.type = type.idup;
-		this.name = name.idup;
-	}
 
 	// Returns a string representation of the argument.
 	// If the type is void, only the name is returned. Otherwise,
@@ -110,14 +106,41 @@ struct FunctionArg
 	// Example: int myInt
 	string toString()
 	{
-		return (type != "void" ? (type ~ " " ~ name) : name);
+		return (type != void.stringof ? (type ~ " " ~ name) : name);
 	}
 }
 // Creates a FunctionArg of type T.
 // Example: MakeArg!int(myInt);
-auto MakeArg(T)(string name)
+auto MakeArg(T = void)(const string name)
 {
-	return FunctionArg(T.stringof, name);
+	FunctionArg result = {
+		type: T.stringof,
+		size: T.sizeof,
+		name: name
+	};
+
+	return result;
+}
+auto MakeArg(T = void)(const string name, const string register)
+{
+	FunctionArg result = {
+		type:     T.stringof,
+		size:     T.sizeof,
+		register: register,
+		name:     name
+	};
+
+	return result;
+}
+auto UserReturn(T)(const string register = null)
+{
+	FunctionArg result = {
+		type:     T.stringof,
+		size:     T.sizeof,
+		register: register
+	};
+	
+	return result;
 }
 // Joins an array of arguments together, separated by comma.
 string toString(FunctionArg[] a)
@@ -309,7 +332,15 @@ template StdcallFunctionPointer(returnType, string name, FunctionArg[] args, siz
 	mixin _funcptr!("Windows", returnType, name, args, address);
 }
 
-string wrapFunction(string[] registers, string returnType, string name, FunctionArg[] args, size_t address)
+enum PurgeType
+{
+	// Calling function cleans up the stack. (__cdecl)
+	Caller,
+	// Called function cleans up the stack. (__stdcall)
+	Callee
+}
+
+string wrapFunction(PurgeType purgeType, string[] registers, FunctionArg returnType, string name, FunctionArg[] args, size_t address)
 {
 	Appender!(string) str;
 
@@ -321,7 +352,7 @@ string wrapFunction(string[] registers, string returnType, string name, Function
 	// type name(args, args, args)
 	// {
 	str.put(format("\n%s %s(%s)\n{",
-				   returnType, name, args.toString()));
+				   returnType.type, name, args.toString()));
 
 	// Local copy of address. Example:
 	// auto func_ptr = cast(uint)name_ptr;
@@ -329,34 +360,48 @@ string wrapFunction(string[] registers, string returnType, string name, Function
 
 	// If the function has a return value, we should store it
 	// and return it from this wrapper function later.
-	bool has_return = returnType != "void";
+	bool has_return = !returnType.type.empty && returnType.type != void.stringof;
 
 	if (has_return)
 	{
 		// Return value. Example:
 		// type result;
-		str.put("\n\t" ~ returnType ~ " result;");
+		str.put("\n\t" ~ returnType.type ~ " result;");
 	}
 
 	// asm
 	// {
 	str.put("\n\tasm\n\t{");
 
-	foreach (i, arg; args)
+	// TODO: move to separate function
+	// Add provided registers to first n args.
+	if (registers.length)
+	{
+		foreach (i, register; registers)
+		{
+			if (i >= args.length)
+				break;
+
+			args[i].register = register;
+		}
+	}
+
+	// Sort by register. Just a stylistic thing, really.
+	args.sort!((a, b) => !a.register.empty && b.register.empty);
+
+	foreach (arg; args)
 	{
 		str.put("\n\t\t");
 
-		// For the first N arguments that are within the number of
-		// given registers, use those registers. Otherwise, push.
-		if (i < registers.length)
+		if (arg.register.empty)
 		{
-			// Example:
-			// mov ECX, myCoolArg
-			str.put(format("mov %s, %s;", registers[i], arg.name));
+			str.put("push " ~ arg.name ~ ";");
 		}
 		else
 		{
-			str.put("push " ~ arg.name ~ ";");
+			// Example:
+			// mov ECX, myCoolArg
+			str.put(format("mov %s, %s;", arg.register, arg.name));
 		}
 	}
 
@@ -367,54 +412,71 @@ string wrapFunction(string[] registers, string returnType, string name, Function
 	{
 		// Move the return value into our local variable.
 		//		mov result, eax
-		//	}
-		//	return result;
-		// }
-		str.put("\n\t\tmov result, eax");
-		str.put("\n\t}");
-		str.put("\n\treturn result;\n}");
+		str.put("\n\t\tmov result, " ~ returnType.register ~ ';');
 	}
-	else
+
+	if (purgeType == PurgeType.Caller)
 	{
-		//	} (end of asm block
-		// } (end of function)
-		str.put("\n\t}\n}");
+		auto stackOffset = args.filter!(x => x.register.empty).map!(x => x.size).sum;
+		if (stackOffset > 0)
+		{
+			str.put(format("\n\t\tadd ESP, 0x%02X;", stackOffset));
+		}
 	}
+
+	//	} (end of asm block)
+	str.put("\n\t}");
+
+	if (has_return)
+	{
+		//	return result;
+		str.put("\n\treturn result;");
+	}
+
+	// } (end of function)
+	str.put("\n}");
 
 	return str.data;
 }
 
 template FastcallFunctionPointer(returnType, string name, FunctionArg[] args, size_t address)
+	if (args.length > 0 && args.all!(x => !x.register.length))
 {
-	static if (!args.length)
-	{
-		mixin FunctionPointer!(returnType, name, null, address);
-	}
-	else
-	{
-		enum _asm = wrapFunction(["ECX", "EDX"], returnType.stringof, name, args, address);
-		debug pragma(msg, _asm ~ "\n");
-		mixin(_asm);
-	}
+	enum _asm = wrapFunction(PurgeType.Callee, ["ECX", "EDX"], UserReturn!returnType("EAX"), name, args, address);
+	debug pragma(msg, _asm ~ "\n");
+	mixin(_asm);
 }
 
 template ThiscallFunctionPointer(returnType, string name, FunctionArg[] args, size_t address)
+	if (args.length > 0 && args.all!(x => !x.register.length))
 {
-	static if (!args.length)
-	{
-		mixin FunctionPointer!(returnType, name, null, address);
-	}
-	else
-	{
-		enum _asm = wrapFunction(["ECX"], returnType.stringof, name, args, address);
-		debug pragma(msg, _asm ~ "\n");
-		mixin(_asm);
-	}
+	enum _asm = wrapFunction(PurgeType.Callee, ["ECX"], UserReturn!returnType("EAX"), name, args, address);
+	debug pragma(msg, _asm ~ "\n");
+	mixin(_asm);
 }
 
 template VoidFunc(string name, size_t address)
 {
-	mixin _funcptr!("C", void, name, [], address);
+	mixin _funcptr!("C", void, name, null, address);
+}
+
+
+template UserFunctionPointer(PurgeType purgeType, FunctionArg returnType, string name, FunctionArg[] args, size_t address)
+	if ((returnType.type == void.stringof || returnType.register.length > 0) && args.any!(x => x.register.length > 0))
+{
+	enum _asm = wrapFunction(purgeType, null, returnType, name, args, address);
+	debug pragma(msg, _asm ~ "\n");
+	mixin(_asm);
+}
+
+template UsercallFunctionPointer(FunctionArg returnType, string name, FunctionArg[] args, size_t address)
+{
+	mixin UserFunctionPointer!(PurgeType.Callee, returnType, name, args, address);
+}
+
+template UserpurgeFunctionPointer(FunctionArg returnType, string name, FunctionArg[] args, size_t address)
+{
+	mixin UserFunctionPointer!(PurgeType.Caller, returnType, name, args, address);
 }
 
 //#define patchdecl(address,data) { (void*)address, arrayptrandsize(data) }

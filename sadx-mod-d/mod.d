@@ -19,12 +19,16 @@ import std.stdio;
 import memaccess;
 import vars;
 
-mixin FunctionPointer!(void, "PrintDebug", [ MakeArg!(const char*)("Format"), MakeArg!(void)("...") ], 0x401000);
+mixin FunctionPointer!(void, "PrintDebug", [ MakeArg!(const char*)("Format"), MakeArg("...") ], 0x401000);
 
 mixin FastcallFunctionPointer!(void, "njRotateXYZ", [
 	MakeArg!(float*)("m"), MakeArg!(int)("angx"),
 	MakeArg!(int)("angy"), MakeArg!(int)("angz")
 ], 0x781770);
+
+mixin UsercallFunctionPointer!(UserReturn!void, "TimeOfDayId", [
+	MakeArg!(int*)("act", "EDI"), MakeArg!(int*)("level", "EBX")
+], 0x0040A420);
 
 MonoTime last_time;
 
@@ -53,6 +57,10 @@ extern (C)
 
 	export void OnFrame()
 	{
+		int level = cast(int)CurrentLevel;
+		int act = cast(int)CurrentAct;
+		TimeOfDayId(&level, &act);
+
 		auto now = MonoTime.currTime;
 		auto dur = cast(TickDuration)(now - last_time);
 		last_time = now;
