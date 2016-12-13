@@ -22,8 +22,8 @@ import vars;
 mixin FunctionPointer!(void, "PrintDebug", [ MakeArg!(const char*)("Format"), MakeArg("...") ], 0x401000);
 
 mixin FastcallFunctionPointer!(void, "njRotateXYZ", [
-	MakeArg!(float*)("m"), MakeArg!(int)("angx"),
-	MakeArg!(int)("angy"), MakeArg!(int)("angz")
+	MakeArg!(float*)("m"), MakeArg!int("angx"),
+	MakeArg!int("angy"), MakeArg!int("angz")
 ], 0x781770);
 
 mixin UsercallFunctionPointer!(UserReturn!void, "TimeOfDayId", [
