@@ -340,7 +340,7 @@ enum PurgeType
 	Callee
 }
 
-string wrapFunction(PurgeType purgeType, string[] registers, FunctionArg returnType, string name, FunctionArg[] args, size_t address)
+string wrapFunction(PurgeType purgeType, FunctionArg returnType, string name, FunctionArg[] args, size_t address, string[] registers = null)
 {
 	Appender!(string) str;
 
@@ -373,16 +373,13 @@ string wrapFunction(PurgeType purgeType, string[] registers, FunctionArg returnT
 	// {
 	str.put("\n\tasm\n\t{");
 
-	// TODO: move to separate function
 	// Add provided registers to first n args.
 	if (registers.length)
 	{
-		foreach (i, register; registers)
+		auto count = min(registers.length, args.length);
+		for (size_t i = 0; i < count; i++)
 		{
-			if (i >= args.length)
-				break;
-
-			args[i].register = register;
+			args[i].register = registers[i];
 		}
 	}
 
@@ -442,7 +439,7 @@ string wrapFunction(PurgeType purgeType, string[] registers, FunctionArg returnT
 template FastcallFunctionPointer(returnType, string name, FunctionArg[] args, size_t address)
 	if (args.length > 0 && args.all!(x => !x.register.length))
 {
-	enum _asm = wrapFunction(PurgeType.Callee, ["ECX", "EDX"], UserReturn!returnType("EAX"), name, args, address);
+	enum _asm = wrapFunction(PurgeType.Callee, UserReturn!returnType("EAX"), name, args, address, ["ECX", "EDX"]);
 	debug pragma(msg, _asm ~ "\n");
 	mixin(_asm);
 }
@@ -450,7 +447,7 @@ template FastcallFunctionPointer(returnType, string name, FunctionArg[] args, si
 template ThiscallFunctionPointer(returnType, string name, FunctionArg[] args, size_t address)
 	if (args.length > 0 && args.all!(x => !x.register.length))
 {
-	enum _asm = wrapFunction(PurgeType.Callee, ["ECX"], UserReturn!returnType("EAX"), name, args, address);
+	enum _asm = wrapFunction(PurgeType.Callee, UserReturn!returnType("EAX"), name, args, address, ["ECX"]);
 	debug pragma(msg, _asm ~ "\n");
 	mixin(_asm);
 }
@@ -464,7 +461,7 @@ template VoidFunc(string name, size_t address)
 template UserFunctionPointer(PurgeType purgeType, FunctionArg returnType, string name, FunctionArg[] args, size_t address)
 	if ((returnType.type == void.stringof || returnType.register.length > 0) && args.any!(x => x.register.length > 0))
 {
-	enum _asm = wrapFunction(purgeType, null, returnType, name, args, address);
+	enum _asm = wrapFunction(purgeType, returnType, name, args, address);
 	debug pragma(msg, _asm ~ "\n");
 	mixin(_asm);
 }
