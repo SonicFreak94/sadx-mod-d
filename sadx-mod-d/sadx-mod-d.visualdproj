@@ -205,6 +205,14 @@
   <filesToClean>*.obj;*.cmd;*.build;*.json;*.dep</filesToClean>
  </Config>
  <Folder name="sadx-mod-d">
+  <Folder name="ninja">
+   <File path="ninja\cnk.d" />
+   <File path="ninja\def.d" />
+   <File path="ninja\dir.d" />
+   <File path="ninja\package.d" />
+   <File path="ninja\pad.d" />
+   <File path="ninja\types.d" />
+  </Folder>
   <File path="dll.def" />
   <File path="dllmain.d" />
   <File path="memaccess.d" />
