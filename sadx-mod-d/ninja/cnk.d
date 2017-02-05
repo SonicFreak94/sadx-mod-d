@@ -440,7 +440,7 @@ struct NJS_CNK_MODEL
 	Sint16*            plist;   /* polygon list                 */
 	NJS_POINT3        center;   /* model center                 */
 	Float                  r;   /* radius                       */
-};
+}
 
 /*
  * NJS_CNK_OBJECT
@@ -454,7 +454,7 @@ struct NJS_CNK_OBJECT
 	Float[3]           scl;     /* scaling                      */
 	NJS_CNK_OBJECT*  child;     /* child object                 */
 	NJS_CNK_OBJECT*  sibling;   /* sibling object               */
-};
+}
 
 
 
@@ -477,7 +477,7 @@ struct NJS_CNK_VERTEX_BUF
 	_col col;                      /* color            48:56*/
 	Sint32    NinjaFlag;        /* Ninja Flag       56:60*/
 	Sint32    UserFlag;         /* User Flag        60:64*/
-};
+}
 
 struct NJS_CNK_EASY_BUF
 {
@@ -485,7 +485,7 @@ struct NJS_CNK_EASY_BUF
 	Float    y;                /* Screen Y                */
 	Float    ooz;              /* One over Z              */
 	Float    inten;            /* intensity               */
-};
+}
 
 struct NJS_CNK_SIMPLE_BUF
 {
@@ -497,7 +497,7 @@ struct NJS_CNK_SIMPLE_BUF
 	Float    spec;             /* Specular                */
 	Float    nx;               /* Normal X                */
 	Float    ny;               /* Normal Y                */
-};
+}
 
 struct NJS_CNK_EASYMULTI_BUF
 {
@@ -509,7 +509,7 @@ struct NJS_CNK_EASYMULTI_BUF
 	Float    r;                /* Red                     */
 	Float    g;                /* Green                   */
 	Float    b;                /* Blue                    */
-};
+}
 
  /* _NINJA_CNK_H_ */
 

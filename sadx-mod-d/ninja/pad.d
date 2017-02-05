@@ -257,7 +257,7 @@ struct PDS_PERIPHERALINFO
 								/* Standby power                           */
 	Uint16 max_pow;             /* 最大消費電流                            */
 								/* Max power                               */
-};
+}
 
 /******** ペリフェラルデータ構造体 *****************************************/
 /******** Peripheral structure *********************************************/
@@ -295,7 +295,7 @@ struct PDS_PERIPHERAL
 										  /* Reserved                      */
 	PDS_PERIPHERALINFO* info;             /* ペリフェラル情報へのポインタ  */
 										  /* Pointer to peripheral info.   */
-};
+}
 
 /*--------------------------------------------------------------------------*/
 
@@ -315,81 +315,81 @@ struct PDS_PERIPHERAL
  */
 
 /******** ポート番号定数 ***************************************************/
-alias   PDD_PORT_A0 NJD_PORT_A0;              /* ポートA0                 */
-alias   PDD_PORT_A1 NJD_PORT_A1;              /* ポートA1                 */
-alias   PDD_PORT_A2 NJD_PORT_A2;              /* ポートA2                 */
-alias   PDD_PORT_A3 NJD_PORT_A3;              /* ポートA3                 */
-alias   PDD_PORT_A4 NJD_PORT_A4;              /* ポートA4                 */
-alias   PDD_PORT_A5 NJD_PORT_A5;              /* ポートA5                 */
-alias   PDD_PORT_B0 NJD_PORT_B0;              /* ポートB0                 */
-alias   PDD_PORT_B1 NJD_PORT_B1;              /* ポートB1                 */
-alias   PDD_PORT_B2 NJD_PORT_B2;              /* ポートB2                 */
-alias   PDD_PORT_B3 NJD_PORT_B3;              /* ポートB3                 */
-alias   PDD_PORT_B4 NJD_PORT_B4;              /* ポートB4                 */
-alias   PDD_PORT_B5 NJD_PORT_B5;              /* ポートB5                 */
-alias   PDD_PORT_C0 NJD_PORT_C0;              /* ポートC0                 */
-alias   PDD_PORT_C1 NJD_PORT_C1;              /* ポートC1                 */
-alias   PDD_PORT_C2 NJD_PORT_C2;              /* ポートC2                 */
-alias   PDD_PORT_C3 NJD_PORT_C3;              /* ポートC3                 */
-alias   PDD_PORT_C4 NJD_PORT_C4;              /* ポートC4                 */
-alias   PDD_PORT_C5 NJD_PORT_C5;              /* ポートC5                 */
-alias   PDD_PORT_D0 NJD_PORT_D0;              /* ポートD0                 */
-alias   PDD_PORT_D1 NJD_PORT_D1;              /* ポートD1                 */
-alias   PDD_PORT_D2 NJD_PORT_D2;              /* ポートD2                 */
-alias   PDD_PORT_D3 NJD_PORT_D3;              /* ポートD3                 */
-alias   PDD_PORT_D4 NJD_PORT_D4;              /* ポートD4                 */
-alias   PDD_PORT_D5 NJD_PORT_D5;              /* ポートD5                 */
+alias   NJD_PORT_A0 = PDD_PORT_A0;              /* ポートA0                 */
+alias   NJD_PORT_A1 = PDD_PORT_A1;              /* ポートA1                 */
+alias   NJD_PORT_A2 = PDD_PORT_A2;              /* ポートA2                 */
+alias   NJD_PORT_A3 = PDD_PORT_A3;              /* ポートA3                 */
+alias   NJD_PORT_A4 = PDD_PORT_A4;              /* ポートA4                 */
+alias   NJD_PORT_A5 = PDD_PORT_A5;              /* ポートA5                 */
+alias   NJD_PORT_B0 = PDD_PORT_B0;              /* ポートB0                 */
+alias   NJD_PORT_B1 = PDD_PORT_B1;              /* ポートB1                 */
+alias   NJD_PORT_B2 = PDD_PORT_B2;              /* ポートB2                 */
+alias   NJD_PORT_B3 = PDD_PORT_B3;              /* ポートB3                 */
+alias   NJD_PORT_B4 = PDD_PORT_B4;              /* ポートB4                 */
+alias   NJD_PORT_B5 = PDD_PORT_B5;              /* ポートB5                 */
+alias   NJD_PORT_C0 = PDD_PORT_C0;              /* ポートC0                 */
+alias   NJD_PORT_C1 = PDD_PORT_C1;              /* ポートC1                 */
+alias   NJD_PORT_C2 = PDD_PORT_C2;              /* ポートC2                 */
+alias   NJD_PORT_C3 = PDD_PORT_C3;              /* ポートC3                 */
+alias   NJD_PORT_C4 = PDD_PORT_C4;              /* ポートC4                 */
+alias   NJD_PORT_C5 = PDD_PORT_C5;              /* ポートC5                 */
+alias   NJD_PORT_D0 = PDD_PORT_D0;              /* ポートD0                 */
+alias   NJD_PORT_D1 = PDD_PORT_D1;              /* ポートD1                 */
+alias   NJD_PORT_D2 = PDD_PORT_D2;              /* ポートD2                 */
+alias   NJD_PORT_D3 = PDD_PORT_D3;              /* ポートD3                 */
+alias   NJD_PORT_D4 = PDD_PORT_D4;              /* ポートD4                 */
+alias   NJD_PORT_D5 = PDD_PORT_D5;              /* ポートD5                 */
 
 /******** ボタン・レバーサポート状態 ***************************************/
-alias PDD_DEV_SUPPORT_AY2 NJD_DEV_SUPPORT_AY2; /* アナログ軸Y2を持つ      */
-alias PDD_DEV_SUPPORT_AX2 NJD_DEV_SUPPORT_AX2; /* アナログ軸X2を持つ      */
-alias PDD_DEV_SUPPORT_AY1 NJD_DEV_SUPPORT_AY1; /* アナログ軸Y1を持つ      */
-alias PDD_DEV_SUPPORT_AX1 NJD_DEV_SUPPORT_AX1; /* アナログ軸X1を持つ      */
-alias  PDD_DEV_SUPPORT_AL NJD_DEV_SUPPORT_AL;  /* アナログ軸Lを持つ       */
-alias  PDD_DEV_SUPPORT_AR NJD_DEV_SUPPORT_AR;  /* アナログ軸Rを持つ       */
-alias PDD_DEV_SUPPORT_KRB NJD_DEV_SUPPORT_KRB; /* 十字キーB右を持つ       */
-alias PDD_DEV_SUPPORT_KLB NJD_DEV_SUPPORT_KLB; /* 十字キーB左を持つ       */
-alias PDD_DEV_SUPPORT_KDB NJD_DEV_SUPPORT_KDB; /* 十字キーB下を持つ       */
-alias PDD_DEV_SUPPORT_KUB NJD_DEV_SUPPORT_KUB; /* 十字キーB上を持つ       */
-alias  PDD_DEV_SUPPORT_TD NJD_DEV_SUPPORT_TD;  /* Dボタンを持つ           */
-alias  PDD_DEV_SUPPORT_TX NJD_DEV_SUPPORT_TX;  /* Xボタンを持つ           */
-alias  PDD_DEV_SUPPORT_TY NJD_DEV_SUPPORT_TY;  /* Yボタンを持つ           */
-alias  PDD_DEV_SUPPORT_TZ NJD_DEV_SUPPORT_TZ;  /* Zボタンを持つ           */
-alias  PDD_DEV_SUPPORT_KR NJD_DEV_SUPPORT_KR;  /* 十字キーA右を持つ       */
-alias  PDD_DEV_SUPPORT_KL NJD_DEV_SUPPORT_KL;  /* 十字キーA左を持つ       */
-alias  PDD_DEV_SUPPORT_KD NJD_DEV_SUPPORT_KD;  /* 十字キーA下を持つ       */
-alias  PDD_DEV_SUPPORT_KU NJD_DEV_SUPPORT_KU;  /* 十字キーA上を持つ       */
-alias  PDD_DEV_SUPPORT_ST NJD_DEV_SUPPORT_ST;  /* スタートボタンを持つ    */
-alias  PDD_DEV_SUPPORT_TA NJD_DEV_SUPPORT_TA;  /* Aボタンを持つ           */
-alias  PDD_DEV_SUPPORT_TB NJD_DEV_SUPPORT_TB;  /* Bボタンを持つ           */
-alias  PDD_DEV_SUPPORT_TC NJD_DEV_SUPPORT_TC;  /* Cボタンを持つ           */
+alias NJD_DEV_SUPPORT_AY2 = PDD_DEV_SUPPORT_AY2; /* アナログ軸Y2を持つ      */
+alias NJD_DEV_SUPPORT_AX2 = PDD_DEV_SUPPORT_AX2; /* アナログ軸X2を持つ      */
+alias NJD_DEV_SUPPORT_AY1 = PDD_DEV_SUPPORT_AY1; /* アナログ軸Y1を持つ      */
+alias NJD_DEV_SUPPORT_AX1 = PDD_DEV_SUPPORT_AX1; /* アナログ軸X1を持つ      */
+alias  NJD_DEV_SUPPORT_AL = PDD_DEV_SUPPORT_AL;  /* アナログ軸Lを持つ       */
+alias  NJD_DEV_SUPPORT_AR = PDD_DEV_SUPPORT_AR;  /* アナログ軸Rを持つ       */
+alias NJD_DEV_SUPPORT_KRB = PDD_DEV_SUPPORT_KRB; /* 十字キーB右を持つ       */
+alias NJD_DEV_SUPPORT_KLB = PDD_DEV_SUPPORT_KLB; /* 十字キーB左を持つ       */
+alias NJD_DEV_SUPPORT_KDB = PDD_DEV_SUPPORT_KDB; /* 十字キーB下を持つ       */
+alias NJD_DEV_SUPPORT_KUB = PDD_DEV_SUPPORT_KUB; /* 十字キーB上を持つ       */
+alias  NJD_DEV_SUPPORT_TD = PDD_DEV_SUPPORT_TD;  /* Dボタンを持つ           */
+alias  NJD_DEV_SUPPORT_TX = PDD_DEV_SUPPORT_TX;  /* Xボタンを持つ           */
+alias  NJD_DEV_SUPPORT_TY = PDD_DEV_SUPPORT_TY;  /* Yボタンを持つ           */
+alias  NJD_DEV_SUPPORT_TZ = PDD_DEV_SUPPORT_TZ;  /* Zボタンを持つ           */
+alias  NJD_DEV_SUPPORT_KR = PDD_DEV_SUPPORT_KR;  /* 十字キーA右を持つ       */
+alias  NJD_DEV_SUPPORT_KL = PDD_DEV_SUPPORT_KL;  /* 十字キーA左を持つ       */
+alias  NJD_DEV_SUPPORT_KD = PDD_DEV_SUPPORT_KD;  /* 十字キーA下を持つ       */
+alias  NJD_DEV_SUPPORT_KU = PDD_DEV_SUPPORT_KU;  /* 十字キーA上を持つ       */
+alias  NJD_DEV_SUPPORT_ST = PDD_DEV_SUPPORT_ST;  /* スタートボタンを持つ    */
+alias  NJD_DEV_SUPPORT_TA = PDD_DEV_SUPPORT_TA;  /* Aボタンを持つ           */
+alias  NJD_DEV_SUPPORT_TB = PDD_DEV_SUPPORT_TB;  /* Bボタンを持つ           */
+alias  NJD_DEV_SUPPORT_TC = PDD_DEV_SUPPORT_TC;  /* Cボタンを持つ           */
 
 /******** ボタン定数 *******************************************************/
-alias    PDD_DGT_TL NJD_DGT_TL;           /* Lボタン(エミュレーション)    */
-alias    PDD_DGT_TR NJD_DGT_TR;           /* Rボタン(エミュレーション)    */
-alias   PDD_DGT_KRB NJD_DGT_KRB;          /* デジタル十字キーB右          */
-alias   PDD_DGT_KLB NJD_DGT_KLB;          /* デジタル十字キーB左          */
-alias   PDD_DGT_KDB NJD_DGT_KDB;          /* デジタル十字キーB下          */
-alias   PDD_DGT_KUB NJD_DGT_KUB;          /* デジタル十字キーB上          */
-alias    PDD_DGT_TD NJD_DGT_TD;           /* Dボタン                      */
-alias    PDD_DGT_TX NJD_DGT_TX;           /* Xボタン                      */
-alias    PDD_DGT_TY NJD_DGT_TY;           /* Yボタン                      */
-alias    PDD_DGT_TZ NJD_DGT_TZ;           /* Zボタン                      */
-alias    PDD_DGT_KR NJD_DGT_KR;           /* デジタル十字キーA右          */
-alias    PDD_DGT_KL NJD_DGT_KL;           /* デジタル十字キーA左          */
-alias    PDD_DGT_KD NJD_DGT_KD;           /* デジタル十字キーA下          */
-alias    PDD_DGT_KU NJD_DGT_KU;           /* デジタル十字キーA上          */
-alias    PDD_DGT_ST NJD_DGT_ST;           /* スタートボタン               */
-alias    PDD_DGT_TA NJD_DGT_TA;           /* Aボタン                      */
-alias    PDD_DGT_TB NJD_DGT_TB;           /* Bボタン                      */
-alias    PDD_DGT_TC NJD_DGT_TC;           /* Cボタン                      */
+alias    NJD_DGT_TL = PDD_DGT_TL;           /* Lボタン(エミュレーション)    */
+alias    NJD_DGT_TR = PDD_DGT_TR;           /* Rボタン(エミュレーション)    */
+alias   NJD_DGT_KRB = PDD_DGT_KRB;          /* デジタル十字キーB右          */
+alias   NJD_DGT_KLB = PDD_DGT_KLB;          /* デジタル十字キーB左          */
+alias   NJD_DGT_KDB = PDD_DGT_KDB;          /* デジタル十字キーB下          */
+alias   NJD_DGT_KUB = PDD_DGT_KUB;          /* デジタル十字キーB上          */
+alias    NJD_DGT_TD = PDD_DGT_TD;           /* Dボタン                      */
+alias    NJD_DGT_TX = PDD_DGT_TX;           /* Xボタン                      */
+alias    NJD_DGT_TY = PDD_DGT_TY;           /* Yボタン                      */
+alias    NJD_DGT_TZ = PDD_DGT_TZ;           /* Zボタン                      */
+alias    NJD_DGT_KR = PDD_DGT_KR;           /* デジタル十字キーA右          */
+alias    NJD_DGT_KL = PDD_DGT_KL;           /* デジタル十字キーA左          */
+alias    NJD_DGT_KD = PDD_DGT_KD;           /* デジタル十字キーA下          */
+alias    NJD_DGT_KU = PDD_DGT_KU;           /* デジタル十字キーA上          */
+alias    NJD_DGT_ST = PDD_DGT_ST;           /* スタートボタン               */
+alias    NJD_DGT_TA = PDD_DGT_TA;           /* Aボタン                      */
+alias    NJD_DGT_TB = PDD_DGT_TB;           /* Bボタン                      */
+alias    NJD_DGT_TC = PDD_DGT_TC;           /* Cボタン                      */
 
 
 /*
  *  TYPEDEFS
  */
 
-alias PDS_PERIPHERAL NJS_PERIPHERAL;
+alias NJS_PERIPHERAL = PDS_PERIPHERAL;
 
 enum NJD_USER_CONTINUE =  0;
 enum NJD_USER_EXIT =      (-1);

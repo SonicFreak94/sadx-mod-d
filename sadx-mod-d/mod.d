@@ -60,6 +60,8 @@ extern (C)
 		WriteData(cast(void*)0x00425C03, cast(ubyte)0x90, 7);
 		PrintDebug("\t\t/!\\ D Mod Init /!\\\n");
 
+		// Misc tests below.
+
 		NJS_MATRIX matrix = [
 			1.0f, 0.0f, 0.0f, 0.0f,
 			0.0f, 1.0f, 0.0f, 0.0f,
@@ -67,11 +69,13 @@ extern (C)
 			0.0f, 0.0f, 0.0f, 1.0f
 		];
 
+		// This tests that thiscall functions are working.
 		njRotateXYZ(matrix.ptr, 16384, 16384, 16384);
 		stdout.writeln(matrix);
 
-		NJS_VECTOR dir = { x: 1000 - 500, y: 1000 - 100, z: 1000 - 50 };
 		Angle x, y;
+		NJS_VECTOR dir = { x: 1000 - 500, y: 1000 - 100, z: 1000 - 50 };
+
 		DirectionToRotation(&dir, &x, &y);
 		PrintDebug("ORIG: %08X, %08X\n", x, y);
 		DirectionToRotation_i(dir, x, y);
@@ -80,6 +84,7 @@ extern (C)
 
 	export void OnFrame()
 	{
+		// Tests that usercall functions are working.
 		int level = cast(int)CurrentLevel;
 		int act = cast(int)CurrentAct;
 		TimeOfDayId(&level, &act);
@@ -91,6 +96,7 @@ extern (C)
 		auto frameTime = to!("msecs", float)(dur);
 		auto m = frameTime / (1000.0f / 60.0f);
 
+		// Fun framerate thing.
 		PrintDebug("[D Mod] [%u] %2.3f FPS [%2.5f ms]\n", cast(int)FrameCounter, 60.0f / m, frameTime);
 	}
 }

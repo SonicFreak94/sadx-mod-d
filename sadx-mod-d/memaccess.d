@@ -1,9 +1,9 @@
 module memaccess;
 
 import core.sys.windows.windows;
-import std.string;
-import std.array;
 import std.algorithm;
+import std.array;
+import std.string;
 import std.traits;
 
 /**
