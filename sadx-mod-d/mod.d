@@ -57,7 +57,7 @@ extern (C)
 		last_time = MonoTime.currTime;
 
 		// This disables ring count increment
-		WriteData(cast(void*)0x00425C03, cast(ubyte)0x90, 7);
+		WriteData!(7)(cast(void*)0x00425C03, 0x90);
 		PrintDebug("\t\t/!\\ D Mod Init /!\\\n");
 
 		// Misc tests below.

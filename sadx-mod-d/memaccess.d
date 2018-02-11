@@ -158,9 +158,9 @@ string toString(FunctionArg[] a)
 * Get the number of elements in an array.
 * @return Number of elements in the array.
 */
-static auto LengthOfArray(T)(T t)
+pragma(inline, true)
+auto LengthOfArray(T)(T[] t)
 {
-	static assert(isArray!(T));
 	return t.length;
 }
 
@@ -168,10 +168,9 @@ static auto LengthOfArray(T)(T t)
 * Get the size of an array.
 * @return Size of the array, in bytes.
 */
-static auto SizeOfArray(T)(T t)
+static auto SizeOfArray(T)(T[] t)
 {
-	static assert(isArray!(T));
-	return t.empty ? 0 : typeof(*t.ptr).sizeof * t.length;
+	return t.empty ? 0 : T.sizeof * t.length;
 }
 
 // Macros for functions that need both an array
@@ -197,39 +196,59 @@ template arraysizeandptr(data)
 	mixin("SizeOfArray(data), data");
 }
 
-static BOOL WriteData(void* writeaddress, const void* data, SIZE_T datasize, SIZE_T* byteswritten)
+static HANDLE curproc;
+static bool curprocinitialized = false;
+
+pragma(inline, true)
+BOOL WriteData(void* writeaddress, const void* data, SIZE_T datasize, SIZE_T* byteswritten)
 {
-	return WriteProcessMemory(GetCurrentProcess(), writeaddress, data, datasize, byteswritten);
+	if (!curprocinitialized)
+	{
+		curproc = GetCurrentProcess();
+		curprocinitialized = true;
+	}
+
+	return WriteProcessMemory(curproc, writeaddress, data, datasize, byteswritten);
 }
+
+pragma(inline, true)
 static BOOL WriteData(void* writeaddress, const void* data, SIZE_T datasize)
 {
 	return WriteData(writeaddress, data, datasize, null);
 }
 
+pragma(inline, true)
 static BOOL WriteData(T)(const T* writeaddress, const T data, SIZE_T* byteswritten)
 {
 	return WriteData(cast(void*)writeaddress, cast(void*)&data, cast(SIZE_T)T.sizeof, byteswritten);
 }
+
+pragma(inline, true)
 static BOOL WriteData(T)(const T* writeaddress, const T data)
 {
 	return WriteData(writeaddress, data, null);
 }
 
+pragma(inline, true)
 static BOOL WriteData(T)(T* writeaddress, in T data, SIZE_T* byteswritten)
 {
 	return WriteData(writeaddress, &data, sizeof(data), byteswritten);
 }
+
+pragma(inline, true)
 static BOOL WriteData(T)(T* writeaddress, in T data)
 {
 	return WriteData(writeaddress, data, null);
 }
 
-static BOOL WriteData(T)(void* writeaddress, const T data, SIZE_T* byteswritten)
+pragma(inline, true)
+static BOOL WriteData(T)(void* writeaddress, const T[] data, SIZE_T* byteswritten)
 {
-	static assert(isArray!(T));
 	return WriteData(writeaddress, data.ptr, SizeOfArray(data), byteswritten);
 }
-static BOOL WriteData(T)(void* writeaddress, const T data)
+
+pragma(inline, true)
+static BOOL WriteData(T)(void* writeaddress, const T[] data)
 {
 	return WriteData(writeaddress, data, null);
 }
@@ -238,15 +257,15 @@ static BOOL WriteData(T)(void* writeaddress, const T data)
 * Write a repeated byte to an arbitrary address.
 * @param address	[in] Address.
 * @param data		[in] Byte to write.
-* @param count		[in] Number of repetitions.
 * @param byteswritten	[out, opt] Number of bytes written.
 * @return Nonzero on success; 0 on error (check GetLastError()).
 */
-static BOOL WriteData(void* address, ubyte data, int count, SIZE_T* byteswritten)
+pragma(inline, true)
+static BOOL WriteData(int count)(void* address, const char data, SIZE_T* byteswritten)
 {
-	auto buf = replicate([ data ], count);
+	char[count] buf;
+	buf[] = data;
 	int result = WriteData(address, buf.ptr, buf.length, byteswritten);
-	buf.destroy();
 	return result;
 }
 
@@ -254,40 +273,45 @@ static BOOL WriteData(void* address, ubyte data, int count, SIZE_T* byteswritten
 * Write a repeated byte to an arbitrary address.
 * @param address	[in] Address.
 * @param data		[in] Byte to write.
-* @param count		[in] Number of repetitions.
 * @return Nonzero on success; 0 on error (check GetLastError()).
 */
-static BOOL WriteData(void* address, ubyte data, int count)
+pragma(inline, true)
+static BOOL WriteData(int count)(void* address, char data)
 {
-	return WriteData(address, data, count, null);
+	return WriteData!(count)(address, data, null);
 }
 
-/**
-* Write a JMP instruction to an arbitrary address.
-* @param writeaddress Address to insert the JMP instruction.
-* @param funcaddress Address to JMP to.
-* @return Nonzero on success; 0 on error (check GetLastError()).
-*/
-static BOOL WriteJump(void* writeaddress, void* funcaddress)
+version (X86)
 {
-	ubyte[5] data;
-	data[0] = 0xE9; // JMP DWORD (relative)
-	*cast(int*)(data.ptr + 1) = cast(uint)funcaddress - (cast(uint)writeaddress + 5);
-	return WriteData(writeaddress, data);
-}
+	/**
+	* Write a JMP instruction to an arbitrary address.
+	* @param writeaddress Address to insert the JMP instruction.
+	* @param funcaddress Address to JMP to.
+	* @return Nonzero on success; 0 on error (check GetLastError()).
+	*/
+	pragma(inline, true)
+	static BOOL WriteJump(void* writeaddress, void* funcaddress)
+	{
+		ubyte[5] data;
+		data[0] = 0xE9; // JMP DWORD (relative)
+		*cast(uint*)(data.ptr + 1) = cast(uint)funcaddress - (cast(uint)writeaddress + 5);
+		return WriteData(writeaddress, data);
+	}
 
-/**
-* Write a CALL instruction to an arbitrary address.
-* @param writeaddress Address to insert the CALL instruction.
-* @param funcaddress Address to CALL.
-* @return Nonzero on success; 0 on error (check GetLastError()).
-*/
-static BOOL WriteCall(void* writeaddress, void* funcaddress)
-{
-	ubyte[5] data;
-	data[0] = 0xE8; // CALL DWORD (relative)
-	*cast(int*)(data.ptr + 1) = cast(uint)funcaddress - (cast(uint)writeaddress + 5);
-	return WriteData(writeaddress, data);
+	/**
+	* Write a CALL instruction to an arbitrary address.
+	* @param writeaddress Address to insert the CALL instruction.
+	* @param funcaddress Address to CALL.
+	* @return Nonzero on success; 0 on error (check GetLastError()).
+	*/
+	pragma(inline, true)
+	static BOOL WriteCall(void* writeaddress, void* funcaddress)
+	{
+		ubyte[5] data;
+		data[0] = 0xE8; // CALL DWORD (relative)
+		*cast(uint*)(data.ptr + 1) = cast(uint)funcaddress - (cast(uint)writeaddress + 5);
+		return WriteData(writeaddress, data);
+	}
 }
 
 // Data pointer and array declarations.
