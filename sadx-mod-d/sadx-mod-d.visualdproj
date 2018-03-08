@@ -226,9 +226,10 @@
   <File path="dll.def" />
   <File path="dllmain.d" />
   <File path="enums.d" />
+  <File path="functions.d" />
   <File path="memaccess.d" />
   <File path="mod.d" />
   <File path="structs.d" />
-  <File path="vars.d" />
+  <File path="variables.d" />
  </Folder>
 </DProject>

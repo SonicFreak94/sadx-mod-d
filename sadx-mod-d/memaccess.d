@@ -347,7 +347,7 @@ template _funcptr(string type, returnType, string name, FunctionArg[] args, size
 	enum result = format!("extern (%5$s) const auto %2$s = cast(%1$s function(%3$s))0x%4$08X;")
 						 (returnType.stringof, name, args.toString(), address, type);
 
-	debug pragma(msg, result ~ "\n");
+	//debug pragma(msg, result ~ "\n");
 	mixin(result);
 }
 
@@ -369,6 +369,8 @@ enum PurgeType
 	Callee
 }
 
+// TODO: fix non-int sized register args
+// TODO: fix args with no name when args must be in registers
 string wrapFunction(PurgeType purgeType, FunctionArg returnType, string name, FunctionArg[] args, size_t address, string[] registers = null)
 {
 	Appender!(string) str;
@@ -469,7 +471,10 @@ template FastcallFunctionPointer(returnType, string name, FunctionArg[] args, si
 	if (args.length > 0 && args.all!(x => !x.register.length))
 {
 	enum _asm = wrapFunction(PurgeType.Callee, userReturn!returnType("EAX"), name, args, address, ["ECX", "EDX"]);
-	debug pragma(msg, _asm ~ "\n");
+	//debug pragma(msg, _asm ~ "\n");
+
+	//static assert(__traits(compiles, mixin(_asm)), "Assembly compilation failed:\n" ~ _asm);
+
 	mixin(_asm);
 }
 
@@ -477,7 +482,10 @@ template ThiscallFunctionPointer(returnType, string name, FunctionArg[] args, si
 	if (args.length > 0 && args.all!(x => !x.register.length))
 {
 	enum _asm = wrapFunction(PurgeType.Callee, userReturn!returnType("EAX"), name, args, address, ["ECX"]);
-	debug pragma(msg, _asm ~ "\n");
+	//debug pragma(msg, _asm ~ "\n");
+
+	//static assert(__traits(compiles, mixin(_asm)), "Assembly compilation failed:\n" ~ _asm);
+
 	mixin(_asm);
 }
 
@@ -491,7 +499,10 @@ template UserFunctionPointer(PurgeType purgeType, FunctionArg returnType, string
 	if ((returnType.type == void.stringof || returnType.register.length > 0) && args.any!(x => x.register.length > 0))
 {
 	enum _asm = wrapFunction(purgeType, returnType, name, args, address);
-	debug pragma(msg, _asm ~ "\n");
+	//debug pragma(msg, _asm ~ "\n");
+
+	//static assert(__traits(compiles, mixin(_asm)), "Assembly compilation failed:\n" ~ _asm);
+
 	mixin(_asm);
 }
 

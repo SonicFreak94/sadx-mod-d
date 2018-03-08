@@ -20,7 +20,7 @@ import std.stdio;
 
 import memaccess;
 import ninja;
-import vars;
+import variables;
 
 mixin FunctionPointer!(void, "PrintDebug", [ makeArg!(const char*)("Format"), makeArg("...") ], 0x401000);
 
@@ -34,6 +34,8 @@ mixin UsercallFunctionPointer!(userReturn!void, "TimeOfDayId", [
 ], 0x0040A420);
 
 mixin FunctionPointer!(void, "DirectionToRotation", [ makeArg!(const NJS_VECTOR*)("dir"), makeArg!(Angle*)("x"), makeArg!(Angle*)("y") ], 0x004BCCA0);
+
+mixin FunctionPointer!(Angle, "GetHorizontalFOV_BAMS", [  ], 0x402F00);
 
 MonoTime lastTime;
 

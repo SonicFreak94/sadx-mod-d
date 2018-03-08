@@ -1,4 +1,4 @@
-module vars;
+module variables;
 
 import ninja;
 import memaccess;
