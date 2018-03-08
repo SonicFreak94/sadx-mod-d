@@ -370,7 +370,6 @@ enum PurgeType
 }
 
 // TODO: fix non-int sized register args
-// TODO: fix args with no name when args must be in registers
 string wrapFunction(PurgeType purgeType, FunctionArg returnType, string name, FunctionArg[] args, size_t address, string[] registers = null)
 {
 	Appender!(string) str;
@@ -416,6 +415,7 @@ string wrapFunction(PurgeType purgeType, FunctionArg returnType, string name, Fu
 
 	// Sort by register. Just a stylistic thing, really.
 	args.sort!((a, b) => !a.register.empty && b.register.empty);
+	size_t stackTemp = 0;
 
 	foreach (arg; args)
 	{
@@ -423,10 +423,22 @@ string wrapFunction(PurgeType purgeType, FunctionArg returnType, string name, Fu
 
 		if (arg.register.empty)
 		{
+			if (arg.name.empty)
+			{
+				import std.conv : to;
+				arg.name = "_ESP" ~ to!string(stackTemp);
+				stackTemp += 4;
+			}
+
 			str.put("push " ~ arg.name ~ ";");
 		}
 		else
 		{
+			if (arg.name.empty)
+			{
+				arg.name = "_" ~ arg.register;
+			}
+
 			// Example:
 			// mov ECX, myCoolArg
 			str.put(format!("mov %s, %s;")(arg.register, arg.name));
@@ -445,7 +457,11 @@ string wrapFunction(PurgeType purgeType, FunctionArg returnType, string name, Fu
 
 	if (purgeType == PurgeType.Caller)
 	{
-		auto stackOffset = args.filter!(x => x.register.empty).map!(x => x.size).sum;
+		auto stackOffset = args
+			.filter!((x) => x.register.empty)
+			.map!((x) => max(4, x.size)) // four-byte aligned
+			.sum;
+
 		if (stackOffset > 0)
 		{
 			str.put(format!("\n\t\tadd ESP, 0x%02X;")(stackOffset));
