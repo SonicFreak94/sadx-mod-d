@@ -2702,8 +2702,7 @@ mixin VoidFunc!("Direct3D_Clear", 0x78BA50);
 mixin FunctionPointer!(int, "CompareOSVersionInfoForSomeReason", [  ], 0x78BAB0);
 mixin VoidFunc!("j_DeltaSleep", 0x78BAC0);
 mixin FunctionPointer!(HRESULT, "Direct3D_SetNullTexture", [  ], 0x78BBA0);
-// TODO: fix non-int sized register args
-//mixin FastcallFunctionPointer!(void, "ChunkTextureFlip", [ makeArg!(short)("a1") ], 0x78BBD0);
+mixin FastcallFunctionPointer!(void, "ChunkTextureFlip", [ makeArg!(short)("a1") ], 0x78BBD0);
 mixin ThiscallFunctionPointer!(HRESULT, "Direct3D_SetNullTextureStage", [ makeArg!(DWORD)("stage") ], 0x78CB40);
 mixin ThiscallFunctionPointer!(void, "njReleaseTextureLow", [ makeArg!(NJS_TEXMEMLIST*)("texmemlist") ], 0x78CD50);
 mixin FunctionPointer!(void, "Direct3D_ProbablyAppliesPalette", [ makeArg!(NJS_TEXMEMLIST *)("") ], 0x78CDC0);
@@ -2715,8 +2714,7 @@ mixin ThiscallFunctionPointer!(void, "njDrawLine3D_Direct3D", [ makeArg!(NJS_POI
 mixin FunctionPointer!(DWORD, "DeviceCaps_CheckTexCoordCaps", [  ], 0x78DB80);
 mixin FastcallFunctionPointer!(void, "njSetCnkBlendMode", [ makeArg!(Uint32)("attr") ], 0x78DB90);
 mixin StdcallFunctionPointer!(float, "DoWeirdProjectionThings", [ makeArg!(float)("a1") ], 0x78DBE0);
-// TODO: fix non-int sized register args
-//mixin FastcallFunctionPointer!(int, "Direct3D_EnableLighting", [ makeArg!(ubyte)("a1") ], 0x78E700);
+mixin FastcallFunctionPointer!(int, "Direct3D_EnableLighting", [ makeArg!(ubyte)("a1") ], 0x78E700);
 mixin FunctionPointer!(int, "InitPolyBuffers", [ makeArg!(int)("_32"), makeArg!(int)("count"), makeArg!(void*)("a3") ], 0x78E720);
 mixin VoidFunc!("FreePolyBuffers", 0x78E7A0);
 mixin FastcallFunctionPointer!(void, "DrawRect_TextureVertexTriangleStrip", [ makeArg!(NJS_TEXTURE_VTX*)("points"), makeArg!(int)("count") ], 0x78E7F0);

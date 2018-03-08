@@ -369,7 +369,6 @@ enum PurgeType
 	Callee
 }
 
-// TODO: fix non-int sized register args
 string wrapFunction(PurgeType purgeType, FunctionArg returnType, string name, FunctionArg[] args, size_t address, string[] registers = null)
 {
 	Appender!(string) str;
@@ -439,9 +438,32 @@ string wrapFunction(PurgeType purgeType, FunctionArg returnType, string name, Fu
 				arg.name = "_" ~ arg.register;
 			}
 
-			// Example:
-			// mov ECX, myCoolArg
-			str.put(format!("mov %s, %s;")(arg.register, arg.name));
+			string register = arg.register;
+
+			if (arg.size < 4)
+			{
+				str.put(format!("xor %1$s, %1$s;")(register));
+				str.put("\n\t\t");
+
+				if (arg.size == 1)
+				{
+					register = ` ` ~ register[1] ~ `L`;
+				}
+				else if (arg.size == 2)
+				{
+					register = ` ` ~ register[1] ~ `X`;
+				}
+				else
+				{
+					assert(false, "size of " ~ arg.type ~ " is invalid!");
+				}
+			}
+
+			// Examples:
+			// mov ECX, myCoolArg;
+			// mov  CX, myCoolArg;
+			// mov  CL, myCoolArg;
+			str.put(format!("mov %s, %s;")(register, arg.name));
 		}
 	}
 
@@ -487,10 +509,6 @@ template FastcallFunctionPointer(returnType, string name, FunctionArg[] args, si
 	if (args.length > 0 && args.all!(x => !x.register.length))
 {
 	enum _asm = wrapFunction(PurgeType.Callee, userReturn!returnType("EAX"), name, args, address, ["ECX", "EDX"]);
-	//debug pragma(msg, _asm ~ "\n");
-
-	//static assert(__traits(compiles, mixin(_asm)), "Assembly compilation failed:\n" ~ _asm);
-
 	mixin(_asm);
 }
 
@@ -498,10 +516,6 @@ template ThiscallFunctionPointer(returnType, string name, FunctionArg[] args, si
 	if (args.length > 0 && args.all!(x => !x.register.length))
 {
 	enum _asm = wrapFunction(PurgeType.Callee, userReturn!returnType("EAX"), name, args, address, ["ECX"]);
-	//debug pragma(msg, _asm ~ "\n");
-
-	//static assert(__traits(compiles, mixin(_asm)), "Assembly compilation failed:\n" ~ _asm);
-
 	mixin(_asm);
 }
 
@@ -515,10 +529,6 @@ template UserFunctionPointer(PurgeType purgeType, FunctionArg returnType, string
 	if ((returnType.type == void.stringof || returnType.register.length > 0) && args.any!(x => x.register.length > 0))
 {
 	enum _asm = wrapFunction(purgeType, returnType, name, args, address);
-	//debug pragma(msg, _asm ~ "\n");
-
-	//static assert(__traits(compiles, mixin(_asm)), "Assembly compilation failed:\n" ~ _asm);
-
 	mixin(_asm);
 }
 
