@@ -27,6 +27,7 @@ struct Reference(Type)
 	{
 		return mixin(s ~ "*__ptr");
 	}
+
 	auto opCast(T)()
 	{
 		static if (is(T == Type))
@@ -38,18 +39,29 @@ struct Reference(Type)
 			return cast(T)(*__ptr);
 		}
 	}
+
 	auto opBinary(string s, T)(T value)
 	{
 		return mixin("*__ptr " ~ s ~ " value");
 	}
+
 	auto opEquals(string s)(T value)
 	{
 		return mixin("*__ptr " ~ s ~ " value");
 	}
+
 	auto opAssign(T)(T value)
 	{
-		return *__ptr = value;
+		static if (is(T == typeof(this)))
+		{
+			return *__ptr = *value.__ptr;
+		}
+		else
+		{
+			return *__ptr = value;
+		}
 	}
+
 	auto opOpAssign(string s, T)(T value)
 	{
 		return mixin("*__ptr " ~ s ~ " value");
