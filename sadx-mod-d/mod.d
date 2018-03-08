@@ -22,20 +22,20 @@ import memaccess;
 import ninja;
 import vars;
 
-mixin FunctionPointer!(void, "PrintDebug", [ MakeArg!(const char*)("Format"), MakeArg("...") ], 0x401000);
+mixin FunctionPointer!(void, "PrintDebug", [ makeArg!(const char*)("Format"), makeArg("...") ], 0x401000);
 
 mixin FastcallFunctionPointer!(void, "njRotateXYZ", [
-	MakeArg!(float*)("m"), MakeArg!int("angx"),
-	MakeArg!int("angy"), MakeArg!int("angz")
+	makeArg!(float*)("m"), makeArg!int("angx"),
+	makeArg!int("angy"), makeArg!int("angz")
 ], 0x781770);
 
-mixin UsercallFunctionPointer!(UserReturn!void, "TimeOfDayId", [
-	MakeArg!(int*)("act", "EDI"), MakeArg!(int*)("level", "EBX")
+mixin UsercallFunctionPointer!(userReturn!void, "TimeOfDayId", [
+	makeArg!(int*)("act", "EDI"), makeArg!(int*)("level", "EBX")
 ], 0x0040A420);
 
-mixin FunctionPointer!(void, "DirectionToRotation", [ MakeArg!(const NJS_VECTOR*)("dir"), MakeArg!(Angle*)("x"), MakeArg!(Angle*)("y") ], 0x004BCCA0);
+mixin FunctionPointer!(void, "DirectionToRotation", [ makeArg!(const NJS_VECTOR*)("dir"), makeArg!(Angle*)("x"), makeArg!(Angle*)("y") ], 0x004BCCA0);
 
-MonoTime last_time;
+MonoTime lastTime;
 
 float squareroot(float a1)
 {
@@ -54,7 +54,7 @@ extern (C)
 	export ModInfo SADXModInfo = { 4 };
 	export void Init()
 	{
-		last_time = MonoTime.currTime;
+		lastTime = MonoTime.currTime;
 
 		// This disables ring count increment
 		WriteData!(7)(cast(void*)0x00425C03, 0x90);
@@ -90,8 +90,8 @@ extern (C)
 		TimeOfDayId(&level, &act);
 
 		auto now = MonoTime.currTime;
-		auto dur = cast(TickDuration)(now - last_time);
-		last_time = now;
+		auto dur = cast(TickDuration)(now - lastTime);
+		lastTime = now;
 
 		auto frameTime = to!("msecs", float)(dur);
 		auto m = frameTime / (1000.0f / 60.0f);

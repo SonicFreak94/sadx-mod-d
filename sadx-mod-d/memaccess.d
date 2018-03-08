@@ -92,7 +92,7 @@ struct Reference(Type)
 	}
 }
 
-// Argument for function pointers. See MakeArg.
+// Argument for function pointers. See makeArg.
 struct FunctionArg
 {
 	string type;
@@ -109,9 +109,10 @@ struct FunctionArg
 		return (type != void.stringof ? (type ~ " " ~ name) : name);
 	}
 }
-// Creates a FunctionArg of type T.
-// Example: MakeArg!int(myInt);
-auto MakeArg(T = void)(const string name)
+
+/// Creates a `FunctionArg` of type `T`.
+/// Example: `makeArg!int(myInt);`
+auto makeArg(T = void)(const string name)
 {
 	FunctionArg result = {
 		type: T.stringof,
@@ -121,7 +122,9 @@ auto MakeArg(T = void)(const string name)
 
 	return result;
 }
-auto MakeArg(T = void)(const string name, const string register)
+
+/// Creates a `FunctionArg` of type `T` in register `register`
+auto makeArg(T = void)(const string name, const string register)
 {
 	FunctionArg result = {
 		type:     T.stringof,
@@ -132,7 +135,8 @@ auto MakeArg(T = void)(const string name, const string register)
 
 	return result;
 }
-auto UserReturn(T)(const string register = null)
+
+auto userReturn(T)(const string register = null)
 {
 	FunctionArg result = {
 		type:     T.stringof,
@@ -142,7 +146,8 @@ auto UserReturn(T)(const string register = null)
 	
 	return result;
 }
-// Joins an array of arguments together, separated by comma.
+
+/// Joins an array of arguments together, separated by comma.
 string toString(FunctionArg[] a)
 {
 	if (a.empty)
@@ -152,7 +157,6 @@ string toString(FunctionArg[] a)
 
 	return a.map!(x => x.toString()).join(", ");
 }
-
 
 /**
 * Get the number of elements in an array.
@@ -318,17 +322,18 @@ version (X86)
 
 template DataPointer(type, string name, size_t address)
 {
-	import std.string : format;
+	import std.format : format;
 
-	mixin(format("auto %2$s = Reference!(%1$s)(cast(%1$s*)0x%3$08X);",
-				 type.stringof, name, address));
+	mixin(format!("auto %2$s = Reference!(%1$s)(cast(%1$s*)0x%3$08X);")
+				 (type.stringof, name, address));
 }
+
 template DataArray(type, string name, size_t address, size_t length)
 {
-	import std.string : format;
+	import std.format : format;
 
-	mixin(format("const auto %2$s = cast(%1$s*)%3$s; const auto %2$s_Length = %4$s;",
-				 type.stringof, name, address, length));
+	mixin(format!("const auto %2$s = cast(%1$s*)%3$s; const auto %2$s_Length = %4$s;")
+				 (type.stringof, name, address, length));
 }
 
 // Function pointer declarations.
@@ -339,8 +344,8 @@ template _funcptr(string type, returnType, string name, FunctionArg[] args, size
 	import std.algorithm;
 	import std.array;
 
-	enum result = format("extern (%5$s) const auto %2$s = cast(%1$s function(%3$s))0x%4$08X;",
-						 returnType.stringof, name, args.toString(), address, type);
+	enum result = format!("extern (%5$s) const auto %2$s = cast(%1$s function(%3$s))0x%4$08X;")
+						 (returnType.stringof, name, args.toString(), address, type);
 
 	debug pragma(msg, result ~ "\n");
 	mixin(result);
@@ -370,13 +375,13 @@ string wrapFunction(PurgeType purgeType, FunctionArg returnType, string name, Fu
 
 	// Address declaration. Example:
 	// const auto name_ptr = cast(void*)0x12345678;
-	str.put(format("const auto %s_ptr = cast(void*)0x%08X;", name, address));
+	str.put(format!("const auto %s_ptr = cast(void*)0x%08X;")(name, address));
 
 	// Function declaration. Example:
 	// type name(args, args, args)
 	// {
-	str.put(format("\n%s %s(%s)\n{",
-				   returnType.type, name, args.toString()));
+	str.put(format!("\n%s %s(%s)\n{")
+				   (returnType.type, name, args.toString()));
 
 	// Local copy of address. Example:
 	// auto func_ptr = cast(uint)name_ptr;
@@ -422,7 +427,7 @@ string wrapFunction(PurgeType purgeType, FunctionArg returnType, string name, Fu
 		{
 			// Example:
 			// mov ECX, myCoolArg
-			str.put(format("mov %s, %s;", arg.register, arg.name));
+			str.put(format!("mov %s, %s;")(arg.register, arg.name));
 		}
 	}
 
@@ -441,7 +446,7 @@ string wrapFunction(PurgeType purgeType, FunctionArg returnType, string name, Fu
 		auto stackOffset = args.filter!(x => x.register.empty).map!(x => x.size).sum;
 		if (stackOffset > 0)
 		{
-			str.put(format("\n\t\tadd ESP, 0x%02X;", stackOffset));
+			str.put(format!("\n\t\tadd ESP, 0x%02X;")(stackOffset));
 		}
 	}
 
@@ -463,7 +468,7 @@ string wrapFunction(PurgeType purgeType, FunctionArg returnType, string name, Fu
 template FastcallFunctionPointer(returnType, string name, FunctionArg[] args, size_t address)
 	if (args.length > 0 && args.all!(x => !x.register.length))
 {
-	enum _asm = wrapFunction(PurgeType.Callee, UserReturn!returnType("EAX"), name, args, address, ["ECX", "EDX"]);
+	enum _asm = wrapFunction(PurgeType.Callee, userReturn!returnType("EAX"), name, args, address, ["ECX", "EDX"]);
 	debug pragma(msg, _asm ~ "\n");
 	mixin(_asm);
 }
@@ -471,7 +476,7 @@ template FastcallFunctionPointer(returnType, string name, FunctionArg[] args, si
 template ThiscallFunctionPointer(returnType, string name, FunctionArg[] args, size_t address)
 	if (args.length > 0 && args.all!(x => !x.register.length))
 {
-	enum _asm = wrapFunction(PurgeType.Callee, UserReturn!returnType("EAX"), name, args, address, ["ECX"]);
+	enum _asm = wrapFunction(PurgeType.Callee, userReturn!returnType("EAX"), name, args, address, ["ECX"]);
 	debug pragma(msg, _asm ~ "\n");
 	mixin(_asm);
 }
