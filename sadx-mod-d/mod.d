@@ -21,21 +21,7 @@ import std.stdio;
 import memaccess;
 import ninja;
 import variables;
-
-mixin FunctionPointer!(void, "PrintDebug", [ makeArg!(const char*)("Format"), makeArg("...") ], 0x401000);
-
-mixin FastcallFunctionPointer!(void, "njRotateXYZ", [
-	makeArg!(float*)("m"), makeArg!int("angx"),
-	makeArg!int("angy"), makeArg!int("angz")
-], 0x781770);
-
-mixin UsercallFunctionPointer!(userReturn!void, "TimeOfDayId", [
-	makeArg!(int*)("act", "EDI"), makeArg!(int*)("level", "EBX")
-], 0x0040A420);
-
-mixin FunctionPointer!(void, "DirectionToRotation", [ makeArg!(const NJS_VECTOR*)("dir"), makeArg!(Angle*)("x"), makeArg!(Angle*)("y") ], 0x004BCCA0);
-
-mixin FunctionPointer!(Angle, "GetHorizontalFOV_BAMS", [  ], 0x402F00);
+import functions;
 
 MonoTime lastTime;
 
@@ -89,16 +75,16 @@ extern (C)
 		// Tests that usercall functions are working.
 		int level = cast(int)CurrentLevel;
 		int act = cast(int)CurrentAct;
-		TimeOfDayId(&level, &act);
+		GetTimeOfDayLevelAndAct(&level, &act);
 
 		auto now = MonoTime.currTime;
-		auto dur = cast(TickDuration)(now - lastTime);
+		auto dur = now - lastTime;
 		lastTime = now;
 
-		auto frameTime = to!("msecs", float)(dur);
-		auto m = frameTime / (1000.0f / 60.0f);
+		auto frameTime = cast(float)dur.total!"usecs";
+		auto m = frameTime / (1_000_000.0f / 60.0f);
 
 		// Fun framerate thing.
-		PrintDebug("[D Mod] [%u] %2.3f FPS [%2.5f ms]\n", cast(int)FrameCounter, 60.0f / m, frameTime);
+		PrintDebug("[D Mod] [%u] %2.3f FPS [%2.5f us]\n", cast(int)FrameCounter, 60.0f / m, frameTime);
 	}
 }

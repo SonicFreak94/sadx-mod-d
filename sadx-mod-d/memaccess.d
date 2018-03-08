@@ -344,10 +344,9 @@ template _funcptr(string type, returnType, string name, FunctionArg[] args, size
 	import std.algorithm;
 	import std.array;
 
-	enum result = format!("extern (%5$s) const auto %2$s = cast(%1$s function(%3$s))0x%4$08X;")
+	enum result = format!("extern (%5$s) immutable auto %2$s = cast(%1$s function(%3$s))0x%4$08X;")
 						 (returnType.stringof, name, args.toString(), address, type);
 
-	//debug pragma(msg, result ~ "\n");
 	mixin(result);
 }
 
