@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "./sadx-mod-d"
+		}
+	],
+	"settings": {
+		"d.projectImportPaths": [
+			"./sadx-mod-d"
+		],
+		"d.neverUseDub": true,
+	}
+}
