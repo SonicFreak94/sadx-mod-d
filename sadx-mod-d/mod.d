@@ -18,10 +18,10 @@ import core.time;
 import std.math;
 import std.stdio;
 
-import memaccess;
 import ninja;
-import variables;
 import functions;
+import memaccess;
+import variables;
 
 MonoTime lastTime;
 
