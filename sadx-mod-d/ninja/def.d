@@ -818,51 +818,51 @@ auto NJM_MAPV(ARG1)(ARG1 map)
 /*
  *  LIGHT MACRO
  */
-ref auto NJM_LIGHT_INIT_VECTOR(in NJS_LIGHT l)
+ref auto NJM_LIGHT_INIT_VECTOR(ref in NJS_LIGHT l)
 {
 	return l.vctr;
 } /*  NJS_LIGHT *l */
-ref auto NJM_LIGHT_INIT_POINT(in NJS_LIGHT l)
+ref auto NJM_LIGHT_INIT_POINT(ref in NJS_LIGHT l)
 {
 	return l.pnt;
 }
 
-ref auto NJM_LIGHT_MATRIX(in NJS_LIGHT l)
+ref auto NJM_LIGHT_MATRIX(ref in NJS_LIGHT l)
 {
 	return l.mtrx;
 }
 
-ref auto NJM_LIGHT_VECTOR(in NJS_LIGHT l)
+ref auto NJM_LIGHT_VECTOR(ref in NJS_LIGHT l)
 {
 	return (l.ltcal).lvctr;
 }
 
-ref auto NJM_LIGHT_POINT(in NJS_LIGHT l)
+ref auto NJM_LIGHT_POINT(ref in NJS_LIGHT l)
 {
 	return (l.ltcal).lpnt;
 }
 
-ref auto NJM_LIGHT_AMB(in NJS_LIGHT l)
+ref auto NJM_LIGHT_AMB(ref in NJS_LIGHT l)
 {
 	return (l.ltcal).amb;
 }
 
-ref auto NJM_LIGHT_DIF(in NJS_LIGHT l)
+ref auto NJM_LIGHT_DIF(ref in NJS_LIGHT l)
 {
 	return (l.ltcal).dif;
 }
 
-ref auto NJM_LIGHT_SPC(in NJS_LIGHT l)
+ref auto NJM_LIGHT_SPC(ref in NJS_LIGHT l)
 {
 	return (l.ltcal).spc;
 }
 
-ref auto NJM_LIGHT_EXP(in NJS_LIGHT l)
+ref auto NJM_LIGHT_EXP(ref in NJS_LIGHT l)
 {
 	return (l.ltcal).exp;
 }
 
-ref auto NJM_LIGHT_COLOR(in NJS_LIGHT l)
+ref auto NJM_LIGHT_COLOR(ref in NJS_LIGHT l)
 {
 	return (l.attr).argb;
 }

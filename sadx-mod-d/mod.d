@@ -30,7 +30,7 @@ float squareroot(float a1)
 	return (a1 >= 0.0) ? sqrt(a1) : -sqrt(a1 * -1.0f);
 }
 
-void DirectionToRotation_i(in NJS_VECTOR dir, out Angle x, out Angle y)
+void DirectionToRotation_i(ref in NJS_VECTOR dir, out Angle x, out Angle y)
 {
 	x = cast(Angle)(atan2(dir.y, dir.z) * 65536.0f * -0.1591549762031479f);
 	auto v3 = dir.z * dir.z + dir.y * dir.y;

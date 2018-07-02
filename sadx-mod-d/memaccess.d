@@ -246,13 +246,13 @@ static BOOL WriteData(T)(const T* writeaddress, const T data)
 }
 
 pragma(inline, true)
-static BOOL WriteData(T)(T* writeaddress, in T data, SIZE_T* byteswritten)
+static BOOL WriteData(T)(T* writeaddress, ref in T data, SIZE_T* byteswritten)
 {
 	return WriteData(writeaddress, &data, sizeof(data), byteswritten);
 }
 
 pragma(inline, true)
-static BOOL WriteData(T)(T* writeaddress, in T data)
+static BOOL WriteData(T)(T* writeaddress, ref in T data)
 {
 	return WriteData(writeaddress, data, null);
 }
