@@ -12,7 +12,7 @@ struct Rotation
 
 alias Rotation3 = Rotation;
 
-extern (C) alias void function(ObjectMaster *) ObjectFuncPtr;
+extern (C) alias void function(ObjectMaster*) ObjectFuncPtr;
 extern (C) alias void function(NJS_MESHSET_SADX*, NJS_POINT3*, NJS_VECTOR*) VBufferFuncPtr;
 
 
@@ -26,9 +26,9 @@ alias void what;
 
 struct AllocatedMem
 {
-	AllocatedMem *next;
-	AllocatedMem *field_4;
-	AllocatedMem *field_8;
+	AllocatedMem* next;
+	AllocatedMem* field_4;
+	AllocatedMem* field_8;
 	int PointsToLastThingMaybe;
 	int field_10;
 	int field_14;
@@ -46,16 +46,16 @@ struct AllocatedMem
 
 struct SaveFileInfo
 {
-	const(char) *Filename;
+	const(char)* Filename;
 	uint LowDate;
 	uint HighDate;
-	SaveFileInfo *Next;
+	SaveFileInfo* Next;
 }
 
 struct LineInfo
 {
-	NJS_POINT3 *Points;
-	int *Colors;
+	NJS_POINT3* Points;
+	int* Colors;
 	int field_8;
 	int Count;
 }
@@ -70,15 +70,15 @@ struct FogData
 
 struct PVMEntry
 {
-	const(char) * Name;
-	NJS_TEXLIST *TexList;
+	const(char)* Name;
+	NJS_TEXLIST* TexList;
 }
 
 struct LevelPVMList
 {
 	short Level;
 	short NumTextures;
-	PVMEntry *PVMList;
+	PVMEntry* PVMList;
 }
 
 struct ObjectListEntry
@@ -89,7 +89,7 @@ struct ObjectListEntry
 	float Distance;
 	int field_8;
 	ObjectFuncPtr LoadSub;
-	const(char) *Name;
+	const(char)* Name;
 }
 
 struct StartPosition
@@ -114,10 +114,10 @@ struct ControllerData
 	short LeftStickY;
 	short RightStickX;
 	short RightStickY;
-	char * Name;
-	void * Extend;
+	char* Name;
+	void* Extend;
 	uint Old;
-	void * Info;
+	void* Info;
 }
 
 struct PolarCoord
@@ -140,7 +140,7 @@ struct RecapScreen
 {
 	float Speed;
 	int LineCount;
-	const(char) **TextData;
+	const(char)** TextData;
 }
 
 struct COL
@@ -148,7 +148,7 @@ struct COL
 	NJS_VECTOR Center;
 	float Radius;
 	int[2] Padding;
-	NJS_OBJECT *Model;
+	NJS_OBJECT* Model;
 	int anonymous_6;
 	int Flags;
 }
@@ -158,9 +158,9 @@ struct GeoAnimData
 	int anonymous_0;
 	float anonymous_1;
 	float anonymous_2;
-	NJS_OBJECT *Model;
-	NJS_ACTION *Animation;
-	NJS_TEXLIST *TexList;
+	NJS_OBJECT* Model;
+	NJS_ACTION* Animation;
+	NJS_TEXLIST* TexList;
 }
 
 struct LandTable
@@ -170,10 +170,10 @@ struct LandTable
 	// see LandTableFlags enum
 	int Flags;
 	float Unknown_1;
-	COL *Col;
-	GeoAnimData *AnimData;
-	const(char) *TexName;
-	NJS_TEXLIST *TexList;
+	COL* Col;
+	GeoAnimData* AnimData;
+	const(char)* TexName;
+	NJS_TEXLIST* TexList;
 	int Unknown_4;
 	int Unknown_5;
 }
@@ -197,13 +197,13 @@ struct LoopHead
 	short Unknown_0;
 	short Count;
 	float TotalDist;
-	Loop *LoopList;
-	ObjectFuncPtr Object;
+	Loop* LoopList;
+	ObjectFuncPtr Object_;
 }
 
 struct AnimData_t
 {
-	NJS_ACTION *Animation;
+	NJS_ACTION* Animation;
 	char Instance;
 	char Property;
 	short NextAnim;
@@ -250,41 +250,41 @@ struct PhysicsData_t
 
 struct WeldInfo
 {
-	NJS_OBJECT *BaseModel;
-	NJS_OBJECT *ModelA;
-	NJS_OBJECT *ModelB;
+	NJS_OBJECT* BaseModel;
+	NJS_OBJECT* ModelA;
+	NJS_OBJECT* ModelB;
 	char VertexPairCount;
 	char WeldType;
 	short anonymous_5;
-	NJS_VECTOR *VertexBuffer;
-	ushort *VertIndexes;
+	NJS_VECTOR* VertexBuffer;
+	ushort* VertIndexes;
 }
 
 struct OffsetAnimData
 {
 	int FrameNum;
-	void *anonymous_0;
+	void* anonymous_0;
 }
 
 struct AnimFrame_1
 {
-	void *Item1Off;
+	void* Item1Off;
 	int Item1Count;
 }
 
 struct AnimFrame_2
 {
-	void *Item1Off;
-	void *Item2Off;
+	void* Item1Off;
+	void* Item2Off;
 	int Item1Count;
 	int Item2Count;
 }
 
 struct AnimFrame_3
 {
-	void *Item1Off;
-	void *Item2Off;
-	void *Item3Off;
+	void* Item1Off;
+	void* Item2Off;
+	void* Item3Off;
 	int Item1Count;
 	int Item2Count;
 	int Item3Count;
@@ -302,11 +302,11 @@ struct AnimThing
 	short field_E;
 	float Frame;
 	int dword14;
-	float *pfloat18;
-	float *pfloat1C;
-	AnimData_t *AnimData;
-	WeldInfo *weldInfo;
-	NJS_ACTION *action;
+	float* pfloat18;
+	float* pfloat1C;
+	AnimData_t* AnimData;
+	WeldInfo* weldInfo;
+	NJS_ACTION* action;
 }
 
 struct struct_a3
@@ -343,12 +343,12 @@ struct CharObj2
 	NJS_VECTOR SurfaceNormal;
 	int SurfaceFlags;
 	int SurfaceFlags_Old;
-	void *array_1x132;
-	ObjectMaster *ObjectHeld;
-	void *field_6C;
-	void *SomePointer;
+	void* array_1x132;
+	ObjectMaster* ObjectHeld;
+	void* field_6C;
+	void* SomePointer;
 	int field_74;
-	void *array_15x32;
+	void* array_15x32;
 	short SonicSpinTimeProbably;
 	short SonicSpinTimer;
 	short LightdashTime;
@@ -380,7 +380,7 @@ struct CollisionThing
 	char field_0;
 	char field_1;
 	short FlagsMaybe;
-	EntityData1 *Entity;
+	EntityData1* Entity;
 }
 
 struct CollisionInfo
@@ -390,22 +390,22 @@ struct CollisionInfo
 	short Flags;
 	short Count;
 	float Radius;
-	CollisionData *CollisionArray;
+	CollisionData* CollisionArray;
 	CollisionThing[16] CollisionThings;
 	int CollisionThingsEnd;
 	int field_94;
 	int field_98;
-	ObjectMaster *Object;
+	ObjectMaster* Object_;
 	short field_A0;
 	short field_A2;
-	CollisionInfo *CollidingObject;
+	CollisionInfo* CollidingObject;
 }
 
 struct DynamicCOL
 {
 	int Flags;
-	NJS_OBJECT *Model;
-	ObjectMaster *Entity;
+	NJS_OBJECT* Model;
+	ObjectMaster* Entity;
 }
 
 struct EntityData1
@@ -419,24 +419,24 @@ struct EntityData1
 	char CharIndex;
 	char CharID;
 	short field_A;
-	NJS_OBJECT* Object;
+	NJS_OBJECT* Object_;
 	Loop* LoopData;
 	Rotation3 Rotation;
 	NJS_VECTOR Position;
 	NJS_VECTOR Scale;
 	CollisionInfo* collisionInfo;
-	void *field_3C;
+	void* field_3C;
 }
 
 struct HomingAttackTarget
 {
-	EntityData1 *entity;
+	EntityData1* entity;
 	float distance;
 }
 
 struct EntityData2
 {
-	CharObj2 *CharacterData;
+	CharObj2* CharacterData;
 	NJS_VECTOR VelocityDirection;
 	NJS_VECTOR SomeCollisionVector;
 	Rotation3 Forward;
@@ -485,8 +485,8 @@ struct ObjectData2
 	float field_1DC;
 	float field_1E0;
 	char[16] gap_1E4;
-	NJS_ACTION *AnimHead_ptr_A;
-	NJS_ACTION *AnimHead_ptr_B;
+	NJS_ACTION* AnimHead_ptr_A;
+	NJS_ACTION* AnimHead_ptr_B;
 	NJS_MATRIX matrix;
 }
 
@@ -495,8 +495,8 @@ mixin template SETObjData_t()
 	char LoadCount;
 	Uint8 f1;
 	short Flags;
-	ObjectMaster *ObjInstance;
-	SETEntry *setEntry;
+	ObjectMaster* ObjInstance;
+	SETEntry* setEntry;
 	float Distance;
 }
 
@@ -524,7 +524,7 @@ struct PRM_Entry
 struct MissionSETData
 {
 	mixin SETObjData_t;
-	PRM_Entry *PRMEntry;
+	PRM_Entry* PRMEntry;
 }
 
 union SETDataUnion
@@ -535,24 +535,24 @@ union SETDataUnion
 
 struct ObjectMaster
 {
-	ObjectMaster *Next;
-	ObjectMaster *Previous;
-	ObjectMaster *Parent;
-	ObjectMaster *Child;
+	ObjectMaster* Next;
+	ObjectMaster* Previous;
+	ObjectMaster* Parent;
+	ObjectMaster* Child;
 	ObjectFuncPtr MainSub;
 	ObjectFuncPtr DisplaySub;
 	ObjectFuncPtr DeleteSub;
 	SETDataUnion SETData;
-	EntityData1 *Data1;
-	void *Data2;
-	void *UnknownA_ptr;
-	void *UnknownB_ptr;
+	EntityData1* Data1;
+	void* Data2;
+	void* UnknownA_ptr;
+	void* UnknownB_ptr;
 	int field_30;
 }
 
 struct VideoData
 {
-	const(char) *Filename;
+	const(char)* Filename;
 	int field_4;
 	int NumFrames;
 	short Width;
@@ -562,13 +562,13 @@ struct VideoData
 struct PathDataPtr
 {
 	int LevelAct;
-	LoopHead **PathList;
+	LoopHead** PathList;
 }
 
 struct ObjectList
 {
 	int Count;
-	ObjectListEntry *List;
+	ObjectListEntry* List;
 }
 
 struct LevelItemAccess
@@ -580,9 +580,9 @@ struct LevelItemAccess
 struct CharSelData
 {
 	ObjectFuncPtr CodePointer;
-	NJS_TEXLIST *TextureList;
-	NJS_ACTION **anonymous_1;
-	int *anonymous_2;
+	NJS_TEXLIST* TextureList;
+	NJS_ACTION** anonymous_1;
+	int* anonymous_2;
 }
 
 struct CharacterLightData
@@ -641,7 +641,7 @@ struct SecondaryEntrance
 
 struct TextureAnimationData
 {
-	NJS_OBJECT *Model;
+	NJS_OBJECT* Model;
 	char MatCount;
 	char[8] MatIDs;
 	char TexID;
@@ -691,19 +691,19 @@ struct LevelCutsceneData
 struct CutsceneData
 {
 	ObjectFuncPtr Function;
-	void *Textures;
+	void* Textures;
 }
 
 struct HintText_Text
 {
-	const(char) *Message;
+	const(char)* Message;
 	int Time;
 }
 
 struct HintText_Entry
 {
-	short *Properties;
-	HintText_Text *Text;
+	short* Properties;
+	HintText_Text* Text;
 }
 
 struct AdventureData_t
@@ -719,7 +719,7 @@ struct AdventureData_t
 
 struct SceneSelectData
 {
-	void *Code;
+	void* Code;
 	char Level;
 	char Act;
 	short Entrance;
@@ -734,20 +734,20 @@ struct TrialLevelListEntry
 
 struct TrialLevelList
 {
-	TrialLevelListEntry *Levels;
+	TrialLevelListEntry* Levels;
 	int Count;
 }
 
 struct SoundFileInfo
 {
 	int Bank;
-	const(char) *Filename;
+	const(char)* Filename;
 }
 
 struct SoundList
 {
 	int Count;
-	SoundFileInfo *List;
+	SoundFileInfo* List;
 }
 
 extern (C) alias void function(EntityData1*) ItemBoxFunction;
@@ -836,14 +836,14 @@ struct RestartData
 
 struct MESFileText
 {
-	short *field_0;
-	const(char) **field_4;
+	short* field_0;
+	const(char)** field_4;
 }
 
 struct MESFileHeader
 {
 	int Count;
-	MESFileText *Texts;
+	MESFileText* Texts;
 }
 
 struct FieldNPCDataYRot
@@ -866,32 +866,32 @@ struct FieldNPCDataXYZRot
 
 struct FieldNPCList
 {
-	void *Data;
+	void* Data;
 	int Count;
 }
 
 struct MusicInfo
 {
-	const(char) *Name;
+	const(char)* Name;
 	int Loop;
 }
 
 struct SoundTestEntry
 {
-	const(char) *Name;
+	const(char)* Name;
 	int ID;
 }
 
 struct SoundTestCategory
 {
-	SoundTestEntry *Entries;
+	SoundTestEntry* Entries;
 	int Count;
 }
 
 struct DeathZone
 {
 	int Characters;
-	NJS_OBJECT *Model;
+	NJS_OBJECT* Model;
 }
 
 struct SkyboxScale
@@ -928,12 +928,12 @@ struct OceanData
 
 struct CreditsInfo
 {
-	const(char) **names;
-	NJS_TEXLIST **texlists;
+	const(char)** names;
+	NJS_TEXLIST** texlists;
 	int count;
-	const(char) *endimagename;
-	NJS_TEXLIST *endtexlist;
-	short *coordinates;
+	const(char)* endimagename;
+	NJS_TEXLIST* endtexlist;
+	short* coordinates;
 }
 
 struct CreditsEntry
@@ -942,12 +942,12 @@ struct CreditsEntry
 	char field_1;
 	char field_2;
 	char field_3;
-	const(char) *Line;
+	const(char)* Line;
 }
 
 struct CreditsList
 {
-	CreditsEntry *Entries;
+	CreditsEntry* Entries;
 	int Count;
 }
 
@@ -1181,14 +1181,14 @@ struct ChaoData1
 {
 	EntityData1 entity;
 	char[8] field_40;
-	ObjectMaster *ObjectMaster_ptr1;
+	ObjectMaster* ObjectMaster_ptr1;
 	char[4] field_4C;
-	ObjectMaster *ObjectMaster_ptr2;
+	ObjectMaster* ObjectMaster_ptr2;
 	char[12] field_54;
 	int field_60;
 	char[4] field_64;
 	int field_68;
-	ChaoDataBase *ChaoDataBase_ptr;
+	ChaoDataBase* ChaoDataBase_ptr;
 	char[64] field_70;
 	int field_B0;
 	char[4] field_B4;
@@ -1204,8 +1204,8 @@ struct ChaoData1
 	char[208] field_454;
 	int field_524;
 	char[160] field_528;
-	ChaoUnknownE *unknown_e_1;
-	ChaoUnknownE *unknown_e_2;
+	ChaoUnknownE* unknown_e_1;
+	ChaoUnknownE* unknown_e_2;
 	char[216] field_5D0;
 	short field_6A8;
 	char[310] field_6AA;
@@ -1251,7 +1251,7 @@ struct ChaoDebugFunction
 {
 	int Enabled;
 	extern (C) void function(ObjectMaster* _this) Function;
-	const(char) *Name;
+	const(char)* Name;
 }
 
 struct BlackMarketItem
@@ -1285,12 +1285,12 @@ union PointType
 
 struct QueuedModelNode
 {
-	QueuedModelNode *Next;
+	QueuedModelNode* Next;
 	float Depth;
 	Uint8 Flags;
 	char BlendMode;
 	short TexNum;
-	NJS_TEXLIST *TexList;
+	NJS_TEXLIST* TexList;
 	NJS_ARGB Color;
 	int Control3D;
 	int ConstantAndAttr;
@@ -1304,9 +1304,9 @@ struct QueuedModelMotionThing
 	PointType Points;
 	char[48] field_40;
 	float FrameNumber;
-	NJS_OBJECT *Object;
-	NJS_MOTION *Motion;
-	NJS_MOTION *MotionMaybe;
+	NJS_OBJECT* Object_;
+	NJS_MOTION* Motion;
+	NJS_MOTION* MotionMaybe;
 	Uint32 Attributes;
 	float Scale;
 	extern (C) void function(NJS_MODEL_SADX*) DrawCallback;
@@ -1315,9 +1315,9 @@ struct QueuedModelMotionThing
 struct QueuedModelTextureMemList
 {
 	QueuedModelNode Node;
-	NJS_MODEL_SADX *Model;
+	NJS_MODEL_SADX* Model;
 	NJS_MATRIX Transform;
-	NJS_TEXTURE_VTX *TexturedVertices;
+	NJS_TEXTURE_VTX* TexturedVertices;
 	int Count;
 	int TextureId;
 	int Flags;
@@ -1335,7 +1335,7 @@ struct QueuedModelAction
 struct QueuedModelObject
 {
 	QueuedModelNode Node;
-	NJS_OBJECT *Object;
+	NJS_OBJECT* Object_;
 	NJS_MATRIX Transform;
 }
 
@@ -1344,7 +1344,7 @@ struct QueuedModelActionPtr
 	QueuedModelNode Node;
 	int field_2C;
 	NJS_MATRIX Transform;
-	NJS_ACTION *Action;
+	NJS_ACTION* Action;
 	float FrameNumber;
 }
 
@@ -1376,7 +1376,7 @@ struct QueuedModelCallback
 	int Unknown;
 	NJS_MATRIX Transform;
 	extern (C) void function(void*) UserFunction;
-	void *UserData;
+	void* UserData;
 }
 
 struct QueuedModelRect
@@ -1404,7 +1404,7 @@ struct QueuedModelSprite
 struct QueuedModelPointer
 {
 	QueuedModelNode Node;
-	NJS_MODEL_SADX *Model;
+	NJS_MODEL_SADX* Model;
 	NJS_MATRIX Transform;
 }
 
@@ -1416,8 +1416,8 @@ struct QueuedModel
 
 struct DrawQueueHead
 {
-	DrawQueueHead *next;
-	DrawQueueHead *prev;
+	DrawQueueHead* next;
+	DrawQueueHead* prev;
 }
 
 // Vertex Buffers
@@ -1534,8 +1534,8 @@ struct Mysterious64Bytes
 
 struct ChunkModelThing
 {
-	NJS_CNK_OBJECT *model;
-	NJS_TEXLIST *texlist;
+	NJS_CNK_OBJECT* model;
+	NJS_TEXLIST* texlist;
 	float scale;
 	int what;
 }
@@ -1560,11 +1560,11 @@ struct NBChunk
 struct TitleCardTexture
 {
 	int Level;
-	const(char) *TextureName;
+	const(char)* TextureName;
 }
 
 struct TitleCardTextureList
 {
 	int Count;
-	TitleCardTexture *List;
+	TitleCardTexture* List;
 }
