@@ -74,5 +74,5 @@ struct NJS_DIRECT_COMPILE_LIGHT
  /* _NINJA_DIR_H_ */
 
 /*
-* End Of File
-*/
+ * End Of File
+ */

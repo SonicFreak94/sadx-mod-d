@@ -1,9 +1,9 @@
 module enums;
 
 /**
-* SADX Mod Loader.
-* SADX enums.
-*/
+ * SADX Mod Loader.
+ * SADX enums.
+ */
 
 import ninja.types;
 

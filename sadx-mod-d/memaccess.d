@@ -7,13 +7,13 @@ import std.string;
 import std.traits;
 
 /**
-* SADX Mod Loader.
-* Memory access inline functions.
-*/
+ * SADX Mod Loader.
+ * Memory access inline functions.
+ */
 
 // Types
 
-// Wrapper structure used to emulate the C++ syntax: int& myInt = *(int*)0x12345678;
+/// Wrapper structure used to emulate the C++ syntax `int& myInt = *(int*)0x12345678;`
 struct Reference(Type)
 {
 	private Type* __ptr;
@@ -171,9 +171,9 @@ string toString(FunctionArg[] a)
 }
 
 /**
-* Get the number of elements in an array.
-* @return Number of elements in the array.
-*/
+ * Get the number of elements in an array.
+ * @return Number of elements in the array.
+ */
 pragma(inline, true)
 auto LengthOfArray(T)(T[] t)
 {
@@ -181,9 +181,9 @@ auto LengthOfArray(T)(T[] t)
 }
 
 /**
-* Get the size of an array.
-* @return Size of the array, in bytes.
-*/
+ * Get the size of an array.
+ * @return Size of the array, in bytes.
+ */
 static auto SizeOfArray(T)(T[] t)
 {
 	return t.empty ? 0 : T.sizeof * t.length;
@@ -270,12 +270,12 @@ static BOOL WriteData(T)(void* writeaddress, const T[] data)
 }
 
 /**
-* Write a repeated byte to an arbitrary address.
-* @param address	[in] Address.
-* @param data		[in] Byte to write.
-* @param byteswritten	[out, opt] Number of bytes written.
-* @return Nonzero on success; 0 on error (check GetLastError()).
-*/
+ * Write a repeated byte to an arbitrary address.
+ * @param address	[in] Address.
+ * @param data		[in] Byte to write.
+ * @param byteswritten	[out, opt] Number of bytes written.
+ * @return Nonzero on success; 0 on error (check GetLastError()).
+ */
 pragma(inline, true)
 static BOOL WriteData(int count)(void* address, const char data, SIZE_T* byteswritten)
 {
@@ -286,11 +286,11 @@ static BOOL WriteData(int count)(void* address, const char data, SIZE_T* byteswr
 }
 
 /**
-* Write a repeated byte to an arbitrary address.
-* @param address	[in] Address.
-* @param data		[in] Byte to write.
-* @return Nonzero on success; 0 on error (check GetLastError()).
-*/
+ * Write a repeated byte to an arbitrary address.
+ * @param address	[in] Address.
+ * @param data		[in] Byte to write.
+ * @return Nonzero on success; 0 on error (check GetLastError()).
+ */
 pragma(inline, true)
 static BOOL WriteData(int count)(void* address, char data)
 {
@@ -300,11 +300,11 @@ static BOOL WriteData(int count)(void* address, char data)
 version (X86)
 {
 	/**
-	* Write a JMP instruction to an arbitrary address.
-	* @param writeaddress Address to insert the JMP instruction.
-	* @param funcaddress Address to JMP to.
-	* @return Nonzero on success; 0 on error (check GetLastError()).
-	*/
+	 * Write a JMP instruction to an arbitrary address.
+	 * @param writeaddress Address to insert the JMP instruction.
+	 * @param funcaddress Address to JMP to.
+	 * @return Nonzero on success; 0 on error (check GetLastError()).
+	 */
 	pragma(inline, true)
 	static BOOL WriteJump(void* writeaddress, void* funcaddress)
 	{
@@ -315,11 +315,11 @@ version (X86)
 	}
 
 	/**
-	* Write a CALL instruction to an arbitrary address.
-	* @param writeaddress Address to insert the CALL instruction.
-	* @param funcaddress Address to CALL.
-	* @return Nonzero on success; 0 on error (check GetLastError()).
-	*/
+	 * Write a CALL instruction to an arbitrary address.
+	 * @param writeaddress Address to insert the CALL instruction.
+	 * @param funcaddress Address to CALL.
+	 * @return Nonzero on success; 0 on error (check GetLastError()).
+	 */
 	pragma(inline, true)
 	static BOOL WriteCall(void* writeaddress, void* funcaddress)
 	{
